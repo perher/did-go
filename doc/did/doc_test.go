@@ -219,13 +219,13 @@ func TestDocResolution(t *testing.T) {
 
 func TestContextVariations(t *testing.T) {
 	var (
-		Base                = "did:example:123456789abcdefghi"
-		Vocab               = "https://www.w3.org/ns/did/#"
-		ContextDIDv1        = "https://www.w3.org/ns/did/v1"
-		ContextTraceability = "https://w3id.org/traceability/v1"
-		ContextBase         = map[string]any{"@base": Base}
-		ContextVocab        = map[string]any{"@vocab": Vocab}
-		ContextMixed        = map[string]any{"@base": Base, "@vocab": Vocab}
+		base                = "did:example:123456789abcdefghi"
+		vocab               = "https://www.w3.org/ns/did/#"
+		contextDIDv1        = "https://www.w3.org/ns/did/v1"
+		contextTraceability = "https://w3id.org/traceability/v1"
+		contextBase         = map[string]any{"@base": base}
+		contextVocab        = map[string]any{"@vocab": vocab}
+		contextMixed        = map[string]any{"@base": base, "@vocab": vocab}
 	)
 
 	tests := map[string]struct {
@@ -234,8 +234,8 @@ func TestContextVariations(t *testing.T) {
 		base    string
 	}{
 		"'string'": {
-			input:   ContextDIDv1,
-			context: ContextDIDv1,
+			input:   contextDIDv1,
+			context: contextDIDv1,
 			base:    "",
 		},
 		"'string' empty": {
@@ -249,13 +249,13 @@ func TestContextVariations(t *testing.T) {
 			base:    "",
 		},
 		"'[]string' single": {
-			input:   []string{ContextDIDv1},
-			context: []string{ContextDIDv1},
+			input:   []string{contextDIDv1},
+			context: []string{contextDIDv1},
 			base:    "",
 		},
 		"'[]string' multiple": {
-			input:   []string{ContextDIDv1, ContextTraceability},
-			context: []string{ContextDIDv1, ContextTraceability},
+			input:   []string{contextDIDv1, contextTraceability},
+			context: []string{contextDIDv1, contextTraceability},
 			base:    "",
 		},
 		"'[]interface{}' empty string": {
@@ -264,54 +264,54 @@ func TestContextVariations(t *testing.T) {
 			base:    "",
 		},
 		"'[]interface{}' single string": {
-			input:   []any{ContextDIDv1},
-			context: []string{ContextDIDv1},
+			input:   []any{contextDIDv1},
+			context: []string{contextDIDv1},
 			base:    "",
 		},
 		"'[]interface{}' multiple string": {
-			input:   []any{ContextDIDv1, ContextTraceability},
-			context: []string{ContextDIDv1, ContextTraceability},
+			input:   []any{contextDIDv1, contextTraceability},
+			context: []string{contextDIDv1, contextTraceability},
 			base:    "",
 		},
 		"'[]interface{}' string + base": {
-			input:   []any{ContextDIDv1, ContextBase},
-			context: []string{ContextDIDv1},
-			base:    Base,
+			input:   []any{contextDIDv1, contextBase},
+			context: []string{contextDIDv1},
+			base:    base,
 		},
 		"'[]interface{}' string + vocab": {
-			input:   []any{ContextDIDv1, ContextVocab},
-			context: []any{ContextDIDv1, ContextVocab},
+			input:   []any{contextDIDv1, contextVocab},
+			context: []any{contextDIDv1, contextVocab},
 			base:    "",
 		},
 		"'[]interface{}' string + vocab + base": {
-			input:   []any{ContextDIDv1, ContextVocab, ContextBase},
-			context: []any{ContextDIDv1, ContextVocab},
-			base:    Base,
+			input:   []any{contextDIDv1, contextVocab, contextBase},
+			context: []any{contextDIDv1, contextVocab},
+			base:    base,
 		},
 		"'[]interface{}' string + mixed": {
-			input:   []any{ContextDIDv1, ContextMixed},
-			context: []any{ContextDIDv1, ContextVocab},
-			base:    Base,
+			input:   []any{contextDIDv1, contextMixed},
+			context: []any{contextDIDv1, contextVocab},
+			base:    base,
 		},
 		"'[]interface{}' base": {
-			input:   []any{ContextBase},
+			input:   []any{contextBase},
 			context: "",
-			base:    Base,
+			base:    base,
 		},
 		"'[]interface{}' vocab": {
-			input:   []any{ContextVocab},
-			context: []any{ContextVocab},
+			input:   []any{contextVocab},
+			context: []any{contextVocab},
 			base:    "",
 		},
 		"'[]interface{}' base + vocab": {
-			input:   []any{ContextBase, ContextVocab},
-			context: []any{ContextVocab},
-			base:    Base,
+			input:   []any{contextBase, contextVocab},
+			context: []any{contextVocab},
+			base:    base,
 		},
 		"'[]interface{}' mixed": {
-			input:   []any{ContextMixed},
-			context: []any{ContextVocab},
-			base:    Base,
+			input:   []any{contextMixed},
+			context: []any{contextVocab},
+			base:    base,
 		},
 	}
 

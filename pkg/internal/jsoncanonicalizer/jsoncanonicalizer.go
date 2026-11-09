@@ -180,12 +180,14 @@ func Transform(jsonData []byte) (result []byte, e error) {
 			if c == '"' {
 				break
 			}
-			if c < ' ' {
+			switch {
+			case c < ' ':
 				setError("Unterminated string literal")
-			} else if c == '\\' {
+			case c == '\\':
 				// Escape sequence
 				c = nextChar()
-				if c == 'u' {
+				switch c {
+				case 'u':
 					// The \u escape
 					firstUTF16 := getUEscape()
 					if utf16.IsSurrogate(firstUTF16) {
@@ -201,10 +203,10 @@ func Transform(jsonData []byte) (result []byte, e error) {
 						// Single UTF-16 code identical to UTF-32.  Output as UTF-8
 						rawString.WriteRune(firstUTF16)
 					}
-				} else if c == '/' {
+				case '/':
 					// Benign but useless escape
 					rawString.WriteByte('/')
-				} else {
+				default:
 					// The JSON standard escapes
 					for i, esc := range asciiEscapes {
 						if esc == c {
@@ -214,7 +216,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 					}
 					setError("Unexpected escape: \\" + string(c))
 				}
-			} else {
+			default:
 				// Just an ordinary ASCII character alternatively a UTF-8 byte
 				// outside of ASCII.
 				// Note that properly formatted UTF-8 never clashes with ASCII
