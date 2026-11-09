@@ -96,7 +96,7 @@ func TestRegistry_Resolve(t *testing.T) {
 				}
 
 				require.NotNil(t, didOpts.Values["k1"])
-				return nil, nil
+				return nil, nil //nolint:nilnil // the test only checks the options passed in
 			},
 		}))
 		_, err := registry.Resolve("1:id:123", vdrapi.WithOption("k1", "v1"))
