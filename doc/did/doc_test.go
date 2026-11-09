@@ -1624,6 +1624,8 @@ func Test_DID_String(t *testing.T) {
 }
 
 func TestDIDSchemas(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Test decode public key", func(t *testing.T) {
 		tests := []struct {
 			name   string

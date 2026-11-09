@@ -23,6 +23,8 @@ import (
 const defaultAlgorithm = "URDNA2015"
 
 func TestGetCanonicalDocument(t *testing.T) {
+	t.Parallel()
+
 	loader, err := testutil.DocumentLoader(ldcontext.Document{
 		URL:     "http://localhost:8652/dummy.jsonld",
 		Content: extraJSONLDContext,
