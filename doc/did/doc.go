@@ -120,7 +120,7 @@ func Parse(did string) (*DID, error) {
 }
 
 // DIDURL holds a DID URL.
-type DIDURL struct { //nolint:golint // ignore name stutter
+type DIDURL struct {
 	DID
 	Path     string
 	Queries  map[string][]string

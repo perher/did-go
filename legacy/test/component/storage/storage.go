@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 // Package storage contains common tests for storage provider implementations.
 // These tests are intended to demonstrate the expected behaviour as defined in the documentation above the
 // spi.Provider, spi.Store and spi.Iterator interface declarations.
+//
+//nolint:mnd,dupl // shared storage test suite: literal fixture values and repeated test steps are intentional.
 package storage
 
 import (
@@ -1646,10 +1648,10 @@ func doPutThenUpdateThenGetTestWithJSONFormattedObject(t *testing.T, provider sp
 
 	storedTestData.String = "Some new string here"
 	storedTestData.Test1Bool = true
-	storedTestData.BigNegativeInt32 = -12345 //nolint:gomnd // Test file
+	storedTestData.BigNegativeInt32 = -12345
 	storedTestData.BigPositiveInt64 = 90000004
 	storedTestData.Test3Float32 = 7.42
-	storedTestData.Test3Float64 = -72.4208 //nolint:gomnd // Test file
+	storedTestData.Test3Float64 = -72.4208
 
 	testDataBytes, err := json.Marshal(storedTestData)
 	require.NoError(t, err)
@@ -1673,28 +1675,28 @@ func storeTestJSONData(t *testing.T, store spi.Store, key string) testStruct {
 		BigNegativeInt32:   -2147483648,
 		SmallNegativeInt32: -3,
 		ZeroInt32:          0,
-		SmallPositiveInt32: 3,          //nolint:gomnd // Test file
-		BigPositiveInt32:   2147483647, //nolint:gomnd // Test file
+		SmallPositiveInt32: 3,
+		BigPositiveInt32:   2147483647,
 
 		BigNegativeInt64:   -9223372036854775808,
 		SmallNegativeInt64: -3,
 		ZeroInt64:          0,
-		SmallPositiveInt64: 3,                   //nolint:gomnd // Test file
-		BigPositiveInt64:   9223372036854775807, //nolint:gomnd // Test file
+		SmallPositiveInt64: 3,
+		BigPositiveInt64:   9223372036854775807,
 
 		Test1Float32: 1.3,
-		Test2Float32: 16, //nolint:gomnd // Test file
+		Test2Float32: 16,
 		Test3Float32: 1.5869797,
-		Test4Float32: 239.902, //nolint:gomnd // Test file
+		Test4Float32: 239.902,
 		Test5Float32: -239.902,
-		ZeroFloat32:  0.00, //nolint:gomnd // Test file
+		ZeroFloat32:  0.00,
 
-		Test1Float64: 0.12345678912345678, //nolint:gomnd // Test file
+		Test1Float64: 0.12345678912345678,
 		Test2Float64: -478.875321,
-		Test3Float64: 123456789, //nolint:gomnd // Test file
+		Test3Float64: 123456789,
 		Test4Float64: 1.00000004,
 		Test5Float64: -239.902,
-		ZeroFloat64:  0.0000, //nolint:gomnd // Test file
+		ZeroFloat64:  0.0000,
 	}
 
 	testDataBytes, err := json.Marshal(testData)
@@ -1804,7 +1806,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(2))
 			require.NoError(t, err)
 
@@ -1855,7 +1856,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(100))
 			require.NoError(t, err)
 
@@ -1920,7 +1920,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(2))
 			require.NoError(t, err)
 
@@ -1971,7 +1970,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(100))
 			require.NoError(t, err)
 
@@ -2040,7 +2038,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(2))
 			require.NoError(t, err)
 
@@ -2091,7 +2088,6 @@ func doStoreQueryTests(t *testing.T, // nolint: funlen,gocognit,gocyclo // Test 
 
 			putData(t, store, keysToPut, valuesToPut, tagsToPut)
 
-			//nolint:gomnd // Test file
 			iterator, err := store.Query(queryExpression, spi.WithPageSize(100))
 			require.NoError(t, err)
 
@@ -2306,7 +2302,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := keysToPutAscendingOrder
@@ -2322,7 +2318,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -2339,7 +2335,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -2368,8 +2364,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2395,8 +2391,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -2446,7 +2442,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 							spi.WithSortOrder(&spi.SortOptions{
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
-							}), spi.WithPageSize(3)) // nolint: gomnd // Test file
+							}), spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2477,7 +2473,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -2509,7 +2505,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -2538,8 +2534,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2565,8 +2561,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -2639,7 +2635,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := keysToPutAscendingOrder
@@ -2655,7 +2651,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -2672,7 +2668,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -2701,8 +2697,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2728,8 +2724,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -2780,7 +2776,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2811,7 +2807,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -2843,7 +2839,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -2872,8 +2868,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -2899,8 +2895,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -3019,7 +3015,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := keysToPutAscendingOrder
@@ -3035,7 +3031,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -3052,7 +3048,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -3081,8 +3077,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3108,8 +3104,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -3160,7 +3156,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3191,7 +3187,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -3223,7 +3219,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -3252,8 +3248,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3279,8 +3275,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -3353,7 +3349,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := keysToPutAscendingOrder
@@ -3369,7 +3365,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -3386,7 +3382,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -3415,8 +3411,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3442,8 +3438,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortAscending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
@@ -3494,7 +3490,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3)) // nolint: gomnd // Test file
+							spi.WithPageSize(3))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3525,7 +3521,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(0))
 						require.NoError(t, err)
 
@@ -3557,7 +3553,7 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3), // nolint: gomnd // Test file
+							spi.WithPageSize(3),
 							spi.WithInitialPageNum(1))
 						require.NoError(t, err)
 
@@ -3586,8 +3582,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(2)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(2))
 						require.NoError(t, err)
 
 						expectedKeys := []string{
@@ -3613,8 +3609,8 @@ func doStoreQueryWithSortingAndInitialPageOptionsTests(t *testing.T, // nolint: 
 								Order:   spi.SortDescending,
 								TagName: "numberTag",
 							}),
-							spi.WithPageSize(3),       // nolint: gomnd // Test file
-							spi.WithInitialPageNum(4)) // nolint: gomnd // Test file
+							spi.WithPageSize(3),
+							spi.WithInitialPageNum(4))
 						require.NoError(t, err)
 
 						verifyExpectedIterator(t, iterator, nil, nil, nil, true,
