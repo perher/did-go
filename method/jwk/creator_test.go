@@ -41,7 +41,7 @@ func TestCreate(t *testing.T) {
 
 		didDoc := result.DIDDocument
 
-		err = prettyPrint(didDoc)
+		err = prettyPrint(t, didDoc)
 		require.NoError(t, err)
 
 		expectedDoc, err := did.ParseDocument([]byte(expectedP256DIDDocument))
@@ -95,7 +95,7 @@ func TestCreate(t *testing.T) {
 
 		didDoc := result.DIDDocument
 
-		err = prettyPrint(didDoc)
+		err = prettyPrint(t, didDoc)
 		require.NoError(t, err)
 
 		expectedDoc, err := did.ParseDocument([]byte(expectedX25519Document))
@@ -137,7 +137,7 @@ func TestCreate(t *testing.T) {
 
 		didDoc := result.DIDDocument
 
-		err = prettyPrint(didDoc)
+		err = prettyPrint(t, didDoc)
 		require.NoError(t, err)
 	})
 

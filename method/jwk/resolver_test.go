@@ -8,7 +8,6 @@ package jwk_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -67,7 +66,7 @@ func TestReadP256(t *testing.T) {
 		require.NotNil(t, docResolution.DIDDocument)
 
 		didDoc := docResolution.DIDDocument
-		err = prettyPrint(didDoc)
+		err = prettyPrint(t, didDoc)
 		require.NoError(t, err)
 
 		expectedDoc, err := did.ParseDocument([]byte(expectedP256DIDDocument))
@@ -113,7 +112,7 @@ func TestReadX25519(t *testing.T) {
 
 		didDoc := docResolution.DIDDocument
 
-		err = prettyPrint(didDoc)
+		err = prettyPrint(t, didDoc)
 		require.NoError(t, err)
 
 		expectedDoc, err := did.ParseDocument([]byte(expectedX25519Document))
@@ -150,13 +149,15 @@ func TestCreateJsonWeKey(t *testing.T) {
 	})
 }
 
-func prettyPrint(result any) error {
+func prettyPrint(t *testing.T, result any) error {
+	t.Helper()
+
 	b, err := json.MarshalIndent(result, "", " ")
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(string(b))
+	t.Log(string(b))
 
 	return nil
 }
