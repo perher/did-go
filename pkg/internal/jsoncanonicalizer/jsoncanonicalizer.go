@@ -27,8 +27,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 	"unicode/utf16"
 )
+
+// firstNonControlChar is the ASCII space; bytes below it are control characters.
+const firstNonControlChar = 0x20
 
 type nameValueType struct {
 	name    string
@@ -80,7 +84,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 	nextChar := func() byte {
 		if index < jsonDataLength {
 			c := jsonData[index]
-			if c > 0x7f {
+			if c > unicode.MaxASCII {
 				setError("Unexpected non-ASCII character")
 			}
 
@@ -152,7 +156,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 					continue CoreLoop
 				}
 			}
-			if c < 0x20 {
+			if c < firstNonControlChar {
 				// Other ASCII control characters must be escaped with \uhhhh
 				quotedString.WriteString(fmt.Sprintf("\\u%04x", c))
 			} else {

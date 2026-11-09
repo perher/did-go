@@ -110,7 +110,10 @@ func Parse(did string) (*DID, error) {
 			"invalid did: %s. Make sure it conforms to the DID syntax: https://w3c.github.io/did-core/#did-syntax", did)
 	}
 
-	parts := strings.SplitN(did, ":", 3)
+	// did:<method>:<method-specific-id>
+	const didParts = 3
+
+	parts := strings.SplitN(did, ":", didParts)
 
 	return &DID{
 		Scheme:           "did",
