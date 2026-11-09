@@ -42,7 +42,7 @@ func New(resolver keyResolver, suites ...api.VerifierSuite) (*DocumentVerifier, 
 // Verify will verify document proofs.
 // Deprecated. Please use vc-go/verifiable.VerifyDIDProof().
 func (dv *DocumentVerifier) Verify(jsonLdDoc []byte, opts ...processor.Opts) error {
-	var jsonLdObject map[string]interface{}
+	var jsonLdObject map[string]any
 
 	err := json.Unmarshal(jsonLdDoc, &jsonLdObject)
 	if err != nil {
@@ -54,7 +54,7 @@ func (dv *DocumentVerifier) Verify(jsonLdDoc []byte, opts ...processor.Opts) err
 
 // VerifyObject will verify document proofs for JSON LD object.
 // Deprecated. Please use vc-go/verifiable.VerifyDIDProof().
-func (dv *DocumentVerifier) VerifyObject(jsonLdObject map[string]interface{}, opts ...processor.Opts) error {
+func (dv *DocumentVerifier) VerifyObject(jsonLdObject map[string]any, opts ...processor.Opts) error {
 	proofs, err := proof.GetProofs(jsonLdObject)
 	if err != nil {
 		return err

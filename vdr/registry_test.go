@@ -89,7 +89,7 @@ func TestRegistry_Resolve(t *testing.T) {
 	t.Run("test opts passed", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptValue: true, ReadFunc: func(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolution, error) {
-				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(didOpts)
@@ -106,7 +106,7 @@ func TestRegistry_Resolve(t *testing.T) {
 	t.Run("test opts passed to accept", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptFunc: func(method string, opts ...vdrapi.DIDMethodOption) bool {
-				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(acceptOpts)
@@ -157,7 +157,7 @@ func TestRegistry_Update(t *testing.T) {
 	t.Run("test opts passed", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptValue: true, UpdateFunc: func(didDoc *did.Doc, opts ...vdrapi.DIDMethodOption) error {
-				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(didOpts)
@@ -175,7 +175,7 @@ func TestRegistry_Update(t *testing.T) {
 	t.Run("test opts passed to accept", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptFunc: func(method string, opts ...vdrapi.DIDMethodOption) bool {
-				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(acceptOpts)
@@ -227,7 +227,7 @@ func TestRegistry_Deactivate(t *testing.T) {
 	t.Run("test opts passed", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptValue: true, DeactivateFunc: func(didID string, opts ...vdrapi.DIDMethodOption) error {
-				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(didOpts)
@@ -245,7 +245,7 @@ func TestRegistry_Deactivate(t *testing.T) {
 	t.Run("test opts passed to accept", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptFunc: func(method string, opts ...vdrapi.DIDMethodOption) bool {
-				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(acceptOpts)
@@ -292,7 +292,7 @@ func TestRegistry_Create(t *testing.T) {
 	t.Run("test opts passed to accept", func(t *testing.T) {
 		registry := New(WithVDR(&mockvdr.VDR{
 			AcceptFunc: func(method string, opts ...vdrapi.DIDMethodOption) bool {
-				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+				acceptOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 				// Apply options
 				for _, opt := range opts {
 					opt(acceptOpts)

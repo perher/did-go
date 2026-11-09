@@ -5,6 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package did
 
+import (
+	"maps"
+	"slices"
+)
+
 // ContextCleanup performs non-intrusive cleanup of the given context by
 // converting `[]string(nil)` and `[]interface{}(nil)` to the empty string, and
 // converting `[]interface{}` to `[]string` if it contains only string values.
@@ -22,7 +27,7 @@ func ContextCleanup(context Context) Context {
 		}
 
 		return ctx
-	case []interface{}:
+	case []any:
 		if len(ctx) == 0 {
 			return ""
 		}
@@ -56,18 +61,16 @@ func ContextCopy(context Context) Context {
 		newContext = append(newContext, ctx...)
 
 		return newContext
-	case []interface{}:
-		var newContext []interface{}
+	case []any:
+		var newContext []any
 
 		for _, v := range ctx {
 			switch value := v.(type) {
 			case string:
 				newContext = append(newContext, value)
-			case map[string]interface{}:
-				newValue := map[string]interface{}{}
-				for k, v := range value {
-					newValue[k] = v
-				}
+			case map[string]any:
+				newValue := map[string]any{}
+				maps.Copy(newValue, value)
 
 				newContext = append(newContext, newValue)
 			}
@@ -92,7 +95,7 @@ func ContextPeekString(context Context) (string, bool) {
 		if len(ctx) > 0 {
 			return ctx[0], true
 		}
-	case []interface{}:
+	case []any:
 		if len(ctx) > 0 {
 			if strval, ok := ctx[0].(string); ok {
 				return strval, true
@@ -113,7 +116,7 @@ func ContextContainsString(context Context, contextString string) bool {
 		have = append(have, ctx)
 	case []string:
 		have = append(have, ctx...)
-	case []interface{}:
+	case []any:
 		for _, val := range ctx {
 			if strval, ok := val.(string); ok {
 				have = append(have, strval)
@@ -122,13 +125,7 @@ func ContextContainsString(context Context, contextString string) bool {
 	}
 
 	// Look for desired string in extracted values
-	for _, item := range have {
-		if item == contextString {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(have, contextString)
 }
 
 // LookupService returns the service from the given DIDDoc matching the given service type.
@@ -151,7 +148,7 @@ func LookupService(didDoc *Doc, serviceType string) (*Service, bool) {
 	return &didDoc.Service[index], true
 }
 
-func comparePriority(v1, v2 interface{}) bool {
+func comparePriority(v1, v2 any) bool {
 	// expecting positive integers plus zero; otherwise cannot compare priority
 	intV1, okV1 := v1.(int)
 	intV2, okV2 := v2.(int)

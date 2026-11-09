@@ -112,7 +112,7 @@ func (r *Registry) Deactivate(did string, opts ...vdrapi.DIDMethodOption) error 
 // Create a new DID Document and store it in this registry.
 func (r *Registry) Create(didMethod string, did *diddoc.Doc,
 	opts ...vdrapi.DIDMethodOption) (*diddoc.DocResolution, error) {
-	docOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+	docOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 
 	for _, opt := range opts {
 		opt(docOpts)

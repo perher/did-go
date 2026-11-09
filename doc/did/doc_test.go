@@ -151,7 +151,7 @@ func TestValidWithDocBase(t *testing.T) {
 				Type:            "SocialWebInboxService",
 				relativeURL:     true,
 				ServiceEndpoint: endpoint.NewDIDCommV1Endpoint("https://social.example.com/83hfh37dj"),
-				Properties:      map[string]interface{}{"spamCost": map[string]interface{}{"amount": "0.50", "currency": "USD"}},
+				Properties:      map[string]any{"spamCost": map[string]any{"amount": "0.50", "currency": "USD"}},
 			},
 			{
 				ID:                       "did:example:123456789abcdefghi#did-communication",
@@ -161,7 +161,7 @@ func TestValidWithDocBase(t *testing.T) {
 				RecipientKeys:            []string{"did:example:123456789abcdefghi#key2"},
 				RoutingKeys:              []string{"did:example:123456789abcdefghi#key2"},
 				ServiceEndpoint:          endpoint.NewDIDCommV1Endpoint("https://agent.example.com/"),
-				Properties:               map[string]interface{}{},
+				Properties:               map[string]any{},
 				recipientKeysRelativeURL: map[string]bool{"did:example:123456789abcdefghi#key2": true},
 				routingKeysRelativeURL:   map[string]bool{"did:example:123456789abcdefghi#key2": true},
 			},
@@ -223,9 +223,9 @@ func TestContextVariations(t *testing.T) {
 		Vocab               = "https://www.w3.org/ns/did/#"
 		ContextDIDv1        = "https://www.w3.org/ns/did/v1"
 		ContextTraceability = "https://w3id.org/traceability/v1"
-		ContextBase         = map[string]interface{}{"@base": Base}
-		ContextVocab        = map[string]interface{}{"@vocab": Vocab}
-		ContextMixed        = map[string]interface{}{"@base": Base, "@vocab": Vocab}
+		ContextBase         = map[string]any{"@base": Base}
+		ContextVocab        = map[string]any{"@vocab": Vocab}
+		ContextMixed        = map[string]any{"@base": Base, "@vocab": Vocab}
 	)
 
 	tests := map[string]struct {
@@ -259,58 +259,58 @@ func TestContextVariations(t *testing.T) {
 			base:    "",
 		},
 		"'[]interface{}' empty string": {
-			input:   []interface{}{""},
+			input:   []any{""},
 			context: []string{""},
 			base:    "",
 		},
 		"'[]interface{}' single string": {
-			input:   []interface{}{ContextDIDv1},
+			input:   []any{ContextDIDv1},
 			context: []string{ContextDIDv1},
 			base:    "",
 		},
 		"'[]interface{}' multiple string": {
-			input:   []interface{}{ContextDIDv1, ContextTraceability},
+			input:   []any{ContextDIDv1, ContextTraceability},
 			context: []string{ContextDIDv1, ContextTraceability},
 			base:    "",
 		},
 		"'[]interface{}' string + base": {
-			input:   []interface{}{ContextDIDv1, ContextBase},
+			input:   []any{ContextDIDv1, ContextBase},
 			context: []string{ContextDIDv1},
 			base:    Base,
 		},
 		"'[]interface{}' string + vocab": {
-			input:   []interface{}{ContextDIDv1, ContextVocab},
-			context: []interface{}{ContextDIDv1, ContextVocab},
+			input:   []any{ContextDIDv1, ContextVocab},
+			context: []any{ContextDIDv1, ContextVocab},
 			base:    "",
 		},
 		"'[]interface{}' string + vocab + base": {
-			input:   []interface{}{ContextDIDv1, ContextVocab, ContextBase},
-			context: []interface{}{ContextDIDv1, ContextVocab},
+			input:   []any{ContextDIDv1, ContextVocab, ContextBase},
+			context: []any{ContextDIDv1, ContextVocab},
 			base:    Base,
 		},
 		"'[]interface{}' string + mixed": {
-			input:   []interface{}{ContextDIDv1, ContextMixed},
-			context: []interface{}{ContextDIDv1, ContextVocab},
+			input:   []any{ContextDIDv1, ContextMixed},
+			context: []any{ContextDIDv1, ContextVocab},
 			base:    Base,
 		},
 		"'[]interface{}' base": {
-			input:   []interface{}{ContextBase},
+			input:   []any{ContextBase},
 			context: "",
 			base:    Base,
 		},
 		"'[]interface{}' vocab": {
-			input:   []interface{}{ContextVocab},
-			context: []interface{}{ContextVocab},
+			input:   []any{ContextVocab},
+			context: []any{ContextVocab},
 			base:    "",
 		},
 		"'[]interface{}' base + vocab": {
-			input:   []interface{}{ContextBase, ContextVocab},
-			context: []interface{}{ContextVocab},
+			input:   []any{ContextBase, ContextVocab},
+			context: []any{ContextVocab},
 			base:    Base,
 		},
 		"'[]interface{}' mixed": {
-			input:   []interface{}{ContextMixed},
-			context: []interface{}{ContextVocab},
+			input:   []any{ContextMixed},
+			context: []any{ContextVocab},
 			base:    Base,
 		},
 	}
@@ -337,23 +337,23 @@ func TestContextMutationPrevention(t *testing.T) {
 	})
 
 	t.Run("map element mutation (@base)", func(t *testing.T) {
-		oldContext := []interface{}{map[string]interface{}{"@base": "baseval"}}
+		oldContext := []any{map[string]any{"@base": "baseval"}}
 		_, _ = parseContext(oldContext)
-		require.Equal(t, []interface{}{map[string]interface{}{"@base": "baseval"}}, oldContext)
+		require.Equal(t, []any{map[string]any{"@base": "baseval"}}, oldContext)
 	})
 
 	t.Run("map element mutation (not @base)", func(t *testing.T) {
-		oldContext := []interface{}{map[string]interface{}{"@key": "keyval"}}
+		oldContext := []any{map[string]any{"@key": "keyval"}}
 		newContext, _ := parseContext(oldContext)
 
-		a0, ok := newContext.([]interface{})
+		a0, ok := newContext.([]any)
 		require.True(t, ok)
 
-		m0, ok := a0[0].(map[string]interface{})
+		m0, ok := a0[0].(map[string]any)
 		require.True(t, ok)
 
 		m0["@key"] = "keyval_mutated"
-		require.Equal(t, []interface{}{map[string]interface{}{"@key": "keyval"}}, oldContext)
+		require.Equal(t, []any{map[string]any{"@key": "keyval"}}, oldContext)
 	})
 }
 
@@ -416,9 +416,9 @@ func TestValid(t *testing.T) {
 		eServices := []Service{
 			{
 				ID:              "did:example:123456789abcdefghi#inbox",
-				Type:            []interface{}{"SocialWebInboxService"},
+				Type:            []any{"SocialWebInboxService"},
 				ServiceEndpoint: endpoint.NewDIDCommV1Endpoint("https://social.example.com/83hfh37dj"),
-				Properties:      map[string]interface{}{"spamCost": map[string]interface{}{"amount": "0.50", "currency": "USD"}},
+				Properties:      map[string]any{"spamCost": map[string]any{"amount": "0.50", "currency": "USD"}},
 			},
 			{
 				ID:                       "did:example:123456789abcdefghi#did-communication",
@@ -427,7 +427,7 @@ func TestValid(t *testing.T) {
 				RecipientKeys:            []string{"did:example:123456789abcdefghi#key2"},
 				RoutingKeys:              []string{"did:example:123456789abcdefghi#key2"},
 				ServiceEndpoint:          endpoint.NewDIDCommV1Endpoint("https://agent.example.com/"),
-				Properties:               map[string]interface{}{},
+				Properties:               map[string]any{},
 				recipientKeysRelativeURL: map[string]bool{"did:example:123456789abcdefghi#key2": false},
 				routingKeysRelativeURL:   map[string]bool{"did:example:123456789abcdefghi#key2": false},
 			},
@@ -441,7 +441,7 @@ func TestValid(t *testing.T) {
 					Accept:      []string{"didcomm/v2"},
 					RoutingKeys: []string{"did:example:123456789abcdefghi#key2"},
 				}}),
-				Properties:               map[string]interface{}{},
+				Properties:               map[string]any{},
 				recipientKeysRelativeURL: map[string]bool{"did:example:123456789abcdefghi#key2": false},
 			},
 		}
@@ -530,7 +530,7 @@ func TestInvalidEncodingInProof(t *testing.T) {
 			c = contextV011
 		}
 		// invalid encoding in nonce
-		rawProofs := []interface{}{map[string]interface{}{
+		rawProofs := []any{map[string]any{
 			"created": "2011-09-23T20:21:34Z",
 			"creator": "did:method:abc#key-1",
 			v:         "6mdES87erjP5r1qCSRW__otj-A_Rj0YgRO7XU_0Amhwdfa7AAmtGUSFGflR_fZqPYrY9ceLRVQCJ49s0q7-LBA",
@@ -543,7 +543,7 @@ func TestInvalidEncodingInProof(t *testing.T) {
 		require.Contains(t, err.Error(), "illegal base64 data")
 
 		// invalid encoding in proof value
-		rawProofs = []interface{}{map[string]interface{}{
+		rawProofs = []any{map[string]any{
 			"created": "2011-09-23T20:21:34Z",
 			"creator": "did:method:abc#key-1",
 			v:         "Invalid\x01",
@@ -754,7 +754,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			raw.AlsoKnownAs = []interface{}{"did:example:123", "did:example:123"}
+			raw.AlsoKnownAs = []any{"did:example:123", "did:example:123"}
 			bytes, err := json.Marshal(raw)
 			require.NoError(t, err)
 			err = validate(bytes, raw.schemaLoader())
@@ -768,7 +768,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			raw.AlsoKnownAs = []interface{}{"not.a.valid.uri"}
+			raw.AlsoKnownAs = []any{"not.a.valid.uri"}
 			bytes, err := json.Marshal(raw)
 			require.NoError(t, err)
 			err = validate(bytes, raw.schemaLoader())
@@ -782,7 +782,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			raw.AlsoKnownAs = []interface{}{0}
+			raw.AlsoKnownAs = []any{0}
 			bytes, err := json.Marshal(raw)
 			require.NoError(t, err)
 			err = validate(bytes, raw.schemaLoader())
@@ -809,7 +809,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			raw.AlsoKnownAs = []interface{}{}
+			raw.AlsoKnownAs = []any{}
 			bytes, err := json.Marshal(raw)
 			require.NoError(t, err)
 			err = validate(bytes, raw.schemaLoader())
@@ -819,7 +819,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 
 	t.Run("test did doc with valid alsoKnownAs entries", func(t *testing.T) {
 		docs := []string{validDoc, validDocV011}
-		valid := []interface{}{
+		valid := []any{
 			"did:example:123",
 			"https://social.example/username",
 			"urn:uuid:1231",
@@ -828,7 +828,7 @@ func TestValidateDidDocAlsoKnownAs(t *testing.T) {
 			for _, aka := range valid {
 				raw := &rawDoc{}
 				require.NoError(t, json.Unmarshal([]byte(d), &raw))
-				raw.AlsoKnownAs = []interface{}{aka}
+				raw.AlsoKnownAs = []any{aka}
 				bytes, err := json.Marshal(raw)
 				require.NoError(t, err)
 				err = validate(bytes, raw.schemaLoader())
@@ -953,7 +953,7 @@ func TestValidateDidDocAuthentication(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			pk, ok := raw.Authentication[1].(map[string]interface{})
+			pk, ok := raw.Authentication[1].(map[string]any)
 			require.True(t, ok)
 			delete(pk, jsonldID)
 			bytes, err := json.Marshal(raw)
@@ -969,7 +969,7 @@ func TestValidateDidDocAuthentication(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			pk, ok := raw.Authentication[1].(map[string]interface{})
+			pk, ok := raw.Authentication[1].(map[string]any)
 			require.True(t, ok)
 			delete(pk, jsonldType)
 			bytes, err := json.Marshal(raw)
@@ -983,7 +983,7 @@ func TestValidateDidDocAuthentication(t *testing.T) {
 	t.Run("test did doc auth public key without controller", func(t *testing.T) {
 		raw := &rawDoc{}
 		require.NoError(t, json.Unmarshal([]byte(validDoc), &raw))
-		pk, ok := raw.Authentication[1].(map[string]interface{})
+		pk, ok := raw.Authentication[1].(map[string]any)
 		require.True(t, ok)
 		delete(pk, jsonldController)
 		bytes, err := json.Marshal(raw)
@@ -996,7 +996,7 @@ func TestValidateDidDocAuthentication(t *testing.T) {
 	t.Run("test did doc auth public key without controller v0.11", func(t *testing.T) {
 		raw := &rawDoc{}
 		require.NoError(t, json.Unmarshal([]byte(validDocV011), &raw))
-		pk, ok := raw.Authentication[1].(map[string]interface{})
+		pk, ok := raw.Authentication[1].(map[string]any)
 		require.True(t, ok)
 		delete(pk, jsonldOwner)
 		bytes, err := json.Marshal(raw)
@@ -1130,7 +1130,7 @@ func TestValidateDidDocProof(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			proof, ok := raw.Proof[0].(map[string]interface{})
+			proof, ok := raw.Proof[0].(map[string]any)
 			require.True(t, ok)
 			delete(proof, jsonldType)
 			bytes, err := json.Marshal(raw)
@@ -1146,7 +1146,7 @@ func TestValidateDidDocProof(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			proof, ok := raw.Proof[0].(map[string]interface{})
+			proof, ok := raw.Proof[0].(map[string]any)
 			require.True(t, ok)
 			delete(proof, jsonldCreated)
 			bytes, err := json.Marshal(raw)
@@ -1162,7 +1162,7 @@ func TestValidateDidDocProof(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			proof, ok := raw.Proof[0].(map[string]interface{})
+			proof, ok := raw.Proof[0].(map[string]any)
 			require.True(t, ok)
 			delete(proof, jsonldCreator)
 			bytes, err := json.Marshal(raw)
@@ -1176,7 +1176,7 @@ func TestValidateDidDocProof(t *testing.T) {
 	t.Run("test did doc proof without proofValue v0.11", func(t *testing.T) {
 		raw := &rawDoc{}
 		require.NoError(t, json.Unmarshal([]byte(validDocV011WithProof), &raw))
-		proof, ok := raw.Proof[0].(map[string]interface{})
+		proof, ok := raw.Proof[0].(map[string]any)
 		require.True(t, ok)
 		delete(proof, jsonldSignatureValue)
 		bytes, err := json.Marshal(raw)
@@ -1191,7 +1191,7 @@ func TestValidateDidDocProof(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			proof, ok := raw.Proof[0].(map[string]interface{})
+			proof, ok := raw.Proof[0].(map[string]any)
 			require.True(t, ok)
 			delete(proof, jsonldDomain)
 			bytes, err := json.Marshal(raw)
@@ -1206,7 +1206,7 @@ func TestValidateDidDocProof(t *testing.T) {
 		for _, d := range docs {
 			raw := &rawDoc{}
 			require.NoError(t, json.Unmarshal([]byte(d), &raw))
-			proof, ok := raw.Proof[0].(map[string]interface{})
+			proof, ok := raw.Proof[0].(map[string]any)
 			require.True(t, ok)
 			delete(proof, jsonldNonce)
 			bytes, err := json.Marshal(raw)
@@ -1826,7 +1826,7 @@ func TestServiceTypeSchema(t *testing.T) {
 		doc, err := ParseDocument([]byte(multipleServiceTypes))
 		require.NoError(t, err)
 		require.NotEmpty(t, doc)
-		require.Equal(t, doc.Service[0].Type, []interface{}{"SocialWebInboxService", "SomeOtherService"})
+		require.Equal(t, doc.Service[0].Type, []any{"SocialWebInboxService", "SomeOtherService"})
 	})
 
 	t.Run("error - not an array of strings", func(t *testing.T) {

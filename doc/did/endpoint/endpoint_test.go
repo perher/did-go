@@ -60,8 +60,8 @@ func TestNewEndpoint(t *testing.T) {
 func TestEndpoint_MarshalUnmarshalJSON(t *testing.T) {
 	testCases := []struct {
 		name          string
-		endpoint      interface{}
-		expectedValue interface{}
+		endpoint      any
+		expectedValue any
 		err           error
 	}{
 		{
@@ -79,13 +79,13 @@ func TestEndpoint_MarshalUnmarshalJSON(t *testing.T) {
 			endpoint: Endpoint{
 				rawDIDCommV1: "https://agent.example.com/",
 			},
-			expectedValue: []byte(fmt.Sprintf("%q", "https://agent.example.com/")),
+			expectedValue: fmt.Appendf(nil, "%q", "https://agent.example.com/"),
 			err:           nil,
 		},
 		{
 			name: "marshal random DIDCore Endpoint (neither DIDcomm V1 nor V2) as interface{}",
 			endpoint: Endpoint{
-				rawObj: []interface{}{"some random endpoint", "some other endpoint"},
+				rawObj: []any{"some random endpoint", "some other endpoint"},
 			},
 			expectedValue: []byte(`["some random endpoint","some other endpoint"]`),
 			err:           nil,
@@ -93,7 +93,7 @@ func TestEndpoint_MarshalUnmarshalJSON(t *testing.T) {
 		{
 			name: "marshal random DIDCore Endpoint (neither DIDcomm V1 nor V2) as map[string]interface{}",
 			endpoint: Endpoint{
-				rawObj: map[string]interface{}{"origins": []interface{}{"some random endpoint"}},
+				rawObj: map[string]any{"origins": []any{"some random endpoint"}},
 			},
 			expectedValue: []byte(`{"origins":["some random endpoint"]}`),
 			err:           nil,
@@ -138,7 +138,7 @@ func TestEndpoint_MarshalUnmarshalJSON(t *testing.T) {
 			_, err = newEP.RoutingKeys()
 			require.EqualError(t, err, "endpoint RoutingKeys not found")
 		case "marshal random DIDCore Endpoint (neither DIDcomm V1 nor V2) as interface{}":
-			require.Equal(t, ep.rawObj.([]interface{})[0], uri)
+			require.Equal(t, ep.rawObj.([]any)[0], uri)
 		}
 	}
 }

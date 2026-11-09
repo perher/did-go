@@ -284,7 +284,7 @@ func assertDualBase58Doc(t *testing.T, doc *did.Doc, didKey, didKeyID, didKeyTyp
 		context = ctx
 	case []string:
 		context = ctx[0]
-	case []interface{}:
+	case []any:
 		var ok bool
 		context, ok = ctx[0].(string)
 		require.True(t, ok)
@@ -370,7 +370,7 @@ func assertDualJSONWebKeyDoc(t *testing.T, doc *did.Doc, didKey, didKeyID string
 		context = ctx
 	case []string:
 		context = ctx[0]
-	case []interface{}:
+	case []any:
 		var ok bool
 		context, ok = ctx[0].(string)
 		require.True(t, ok)

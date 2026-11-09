@@ -22,7 +22,7 @@ type MockSuite struct {
 }
 
 // GetCanonicalDocument returns GetCanonicalDocumentVal, GetCanonicalDocumentErr.
-func (m *MockSuite) GetCanonicalDocument(doc map[string]interface{}, opts ...processor.Opts) ([]byte, error) {
+func (m *MockSuite) GetCanonicalDocument(doc map[string]any, opts ...processor.Opts) ([]byte, error) {
 	return m.GetCanonicalDocumentVal, m.GetCanonicalDocumentErr
 }
 

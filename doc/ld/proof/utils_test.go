@@ -68,9 +68,9 @@ func TestGetCopyWithoutProof(t *testing.T) {
 }
 
 func TestAddSingleProof(t *testing.T) {
-	doc := map[string]interface{}{
+	doc := map[string]any{
 		"test": "test",
-		"proof": map[string]interface{}{
+		"proof": map[string]any{
 			"type":       "Ed25519Signature2018",
 			"creator":    "creator",
 			"created":    "2011-09-23T20:21:34Z",
@@ -95,22 +95,22 @@ func TestAddSingleProof(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func getDefaultDoc() map[string]interface{} {
-	return map[string]interface{}{
+func getDefaultDoc() map[string]any {
+	return map[string]any{
 		"test": "test",
 	}
 }
 
-func getDefaultDocWithSignature() map[string]interface{} {
-	return map[string]interface{}{
+func getDefaultDocWithSignature() map[string]any {
+	return map[string]any{
 		"test":  "test",
 		"proof": getProofs(),
 	}
 }
 
-func getProofs() []interface{} {
-	return []interface{}{
-		map[string]interface{}{
+func getProofs() []any {
+	return []any{
+		map[string]any{
 			"type":       "Ed25519Signature2018",
 			"creator":    "creator",
 			"created":    "2011-09-23T20:21:34Z",

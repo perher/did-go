@@ -12,8 +12,10 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"maps"
 	"net/url"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -175,7 +177,7 @@ func ParseDIDURL(didURL string) (*DIDURL, error) {
 
 // Context represents JSON-LD representation-specific DID-core @context, which
 // must be either a string, or a list containing maps and/or strings.
-type Context interface{}
+type Context any
 
 // DocResolution did resolution.
 type DocResolution struct {
@@ -377,14 +379,14 @@ func (pk *VerificationMethod) JSONWebKey() *jwk.JWK {
 
 // Service DID doc service.
 type Service struct {
-	ID                       string                 `json:"id"`
-	Type                     interface{}            `json:"type"`
-	Priority                 interface{}            `json:"priority,omitempty"`
-	RecipientKeys            []string               `json:"recipientKeys,omitempty"`
-	RoutingKeys              []string               `json:"routingKeys,omitempty"`
-	ServiceEndpoint          endpoint.Endpoint      `json:"serviceEndpoint"`
-	Accept                   []string               `json:"accept,omitempty"`
-	Properties               map[string]interface{} `json:"properties,omitempty"`
+	ID                       string            `json:"id"`
+	Type                     any               `json:"type"`
+	Priority                 any               `json:"priority,omitempty"`
+	RecipientKeys            []string          `json:"recipientKeys,omitempty"`
+	RoutingKeys              []string          `json:"routingKeys,omitempty"`
+	ServiceEndpoint          endpoint.Endpoint `json:"serviceEndpoint"`
+	Accept                   []string          `json:"accept,omitempty"`
+	Properties               map[string]any    `json:"properties,omitempty"`
 	recipientKeysRelativeURL map[string]bool
 	routingKeysRelativeURL   map[string]bool
 	relativeURL              bool
@@ -439,20 +441,20 @@ func NewReferencedVerification(vm *VerificationMethod, r VerificationRelationshi
 }
 
 type rawDoc struct {
-	Context              Context                  `json:"@context,omitempty"`
-	ID                   string                   `json:"id,omitempty"`
-	AlsoKnownAs          []interface{}            `json:"alsoKnownAs,omitempty"`
-	VerificationMethod   []map[string]interface{} `json:"verificationMethod,omitempty"`
-	PublicKey            []map[string]interface{} `json:"publicKey,omitempty"`
-	Service              []map[string]interface{} `json:"service,omitempty"`
-	Authentication       []interface{}            `json:"authentication,omitempty"`
-	AssertionMethod      []interface{}            `json:"assertionMethod,omitempty"`
-	CapabilityDelegation []interface{}            `json:"capabilityDelegation,omitempty"`
-	CapabilityInvocation []interface{}            `json:"capabilityInvocation,omitempty"`
-	KeyAgreement         []interface{}            `json:"keyAgreement,omitempty"`
-	Created              *time.Time               `json:"created,omitempty"`
-	Updated              *time.Time               `json:"updated,omitempty"`
-	Proof                []interface{}            `json:"proof,omitempty"`
+	Context              Context          `json:"@context,omitempty"`
+	ID                   string           `json:"id,omitempty"`
+	AlsoKnownAs          []any            `json:"alsoKnownAs,omitempty"`
+	VerificationMethod   []map[string]any `json:"verificationMethod,omitempty"`
+	PublicKey            []map[string]any `json:"publicKey,omitempty"`
+	Service              []map[string]any `json:"service,omitempty"`
+	Authentication       []any            `json:"authentication,omitempty"`
+	AssertionMethod      []any            `json:"assertionMethod,omitempty"`
+	CapabilityDelegation []any            `json:"capabilityDelegation,omitempty"`
+	CapabilityInvocation []any            `json:"capabilityInvocation,omitempty"`
+	KeyAgreement         []any            `json:"keyAgreement,omitempty"`
+	Created              *time.Time       `json:"created,omitempty"`
+	Updated              *time.Time       `json:"updated,omitempty"`
+	Proof                []any            `json:"proof,omitempty"`
 }
 
 // UnmarshalJSON handles the custom unmarshaling logic for the rawDoc struct.
@@ -470,14 +472,14 @@ func (r *rawDoc) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	var proofArray []interface{}
+	var proofArray []any
 
 	if temp.Proof != nil {
-		var proofSingle interface{}
+		var proofSingle any
 
 		if err := json.Unmarshal(temp.Proof, &proofArray); err != nil {
 			if err = json.Unmarshal(temp.Proof, &proofSingle); err == nil {
-				proofArray = []interface{}{proofSingle}
+				proofArray = []any{proofSingle}
 			}
 		}
 	}
@@ -631,11 +633,11 @@ func populateVerificationRelationships(doc *Doc, raw *rawDoc) error {
 	return nil
 }
 
-func populateProofs(context, didID, baseURI string, rawProofs []interface{}) ([]Proof, error) { // nolint:funlen,gocyclo
+func populateProofs(context, didID, baseURI string, rawProofs []any) ([]Proof, error) { // nolint:funlen,gocyclo
 	proofs := make([]Proof, 0, len(rawProofs))
 
 	for _, rawProof := range rawProofs {
-		emap, ok := rawProof.(map[string]interface{})
+		emap, ok := rawProof.(map[string]any)
 		if !ok {
 			return nil, errors.New("rawProofs is not map[string]interface{}")
 		}
@@ -704,7 +706,7 @@ func populateProofs(context, didID, baseURI string, rawProofs []interface{}) ([]
 }
 
 //nolint:funlen,gocyclo
-func populateServices(didID, baseURI string, rawServices []map[string]interface{}) []Service {
+func populateServices(didID, baseURI string, rawServices []map[string]any) []Service {
 	services := make([]Service, 0, len(rawServices))
 
 	for _, rawService := range rawServices {
@@ -740,9 +742,9 @@ func populateServices(didID, baseURI string, rawServices []map[string]interface{
 			if ok { // DIDComm V1 format.
 				sp = endpoint.NewDIDCommV1Endpoint(uriStr)
 			} else if epEntry != nil { // DIDComm V2 format (first valid entry for now).
-				entries, ok := epEntry.([]interface{})
+				entries, ok := epEntry.([]any)
 				if ok && len(entries) > 0 {
-					firstEntry, is := entries[0].(map[string]interface{})
+					firstEntry, is := entries[0].(map[string]any)
 					if is {
 						epURI := stringEntry(firstEntry["uri"])
 						epAccept := stringArray(firstEntry["accept"])
@@ -753,7 +755,7 @@ func populateServices(didID, baseURI string, rawServices []map[string]interface{
 					}
 				}
 
-				coreServices, ok := epEntry.(map[string]interface{}) // DID Core
+				coreServices, ok := epEntry.(map[string]any) // DID Core
 				if ok && len(coreServices) > 0 {
 					sp = endpoint.NewDIDCoreEndpoint(coreServices)
 				}
@@ -807,7 +809,7 @@ func populateKeys(keys []string, didID, baseURI string) ([]string, map[string]bo
 	return values, keysRelativeURL
 }
 
-func populateVerification(doc *Doc, rawVerification []interface{},
+func populateVerification(doc *Doc, rawVerification []any,
 	relationship VerificationRelationship) ([]Verification, error) {
 	var vms []Verification
 
@@ -824,7 +826,7 @@ func populateVerification(doc *Doc, rawVerification []interface{},
 }
 
 // getVerification gets verification from raw data.
-func getVerification(doc *Doc, rawVerification interface{},
+func getVerification(doc *Doc, rawVerification any,
 	relationship VerificationRelationship) ([]Verification, error) {
 	// context, docID string
 	vm := doc.VerificationMethod
@@ -835,7 +837,7 @@ func getVerification(doc *Doc, rawVerification interface{},
 		return getVerificationsByKeyID(doc.ID, doc.processingMeta.baseURI, vm, relationship, keyID)
 	}
 
-	m, ok := rawVerification.(map[string]interface{})
+	m, ok := rawVerification.(map[string]any)
 	if !ok {
 		return nil, errors.New("rawVerification is not map[string]interface{}")
 	}
@@ -848,13 +850,13 @@ func getVerification(doc *Doc, rawVerification interface{},
 	}
 
 	if context == contextV12019 {
-		keyIDs, keyIDsExist := m[jsonldPublicKey].([]interface{})
+		keyIDs, keyIDsExist := m[jsonldPublicKey].([]any)
 		if keyIDsExist {
 			return getVerificationsByKeyID(doc.ID, doc.processingMeta.baseURI, vm, relationship, keyIDs...)
 		}
 	}
 
-	pk, err := populateVerificationMethod(context, doc.ID, doc.processingMeta.baseURI, []map[string]interface{}{m})
+	pk, err := populateVerificationMethod(context, doc.ID, doc.processingMeta.baseURI, []map[string]any{m})
 	if err != nil {
 		return nil, err
 	}
@@ -864,7 +866,7 @@ func getVerification(doc *Doc, rawVerification interface{},
 
 // getVerificationsByKeyID get verification methods by key IDs.
 func getVerificationsByKeyID(didID, baseURI string, vm []VerificationMethod, relationship VerificationRelationship,
-	keyIDs ...interface{}) ([]Verification, error) {
+	keyIDs ...any) ([]Verification, error) {
 	var vms []Verification
 
 	for _, keyID := range keyIDs {
@@ -891,7 +893,7 @@ func getVerificationsByKeyID(didID, baseURI string, vm []VerificationMethod, rel
 	return vms, nil
 }
 
-func resolveRelativeDIDURL(didID, baseURI string, keyID interface{}) string {
+func resolveRelativeDIDURL(didID, baseURI string, keyID any) string {
 	id := baseURI
 
 	if id == "" {
@@ -912,7 +914,7 @@ func makeRelativeDIDURL(didURL, baseURI, didID string) string {
 }
 
 func populateVerificationMethod(context, didID, baseURI string,
-	rawVM []map[string]interface{}) ([]VerificationMethod, error) {
+	rawVM []map[string]any) ([]VerificationMethod, error) {
 	var verificationMethods []VerificationMethod
 
 	for _, v := range rawVM {
@@ -951,7 +953,7 @@ func populateVerificationMethod(context, didID, baseURI string,
 	return verificationMethods, nil
 }
 
-func decodeVM(vm *VerificationMethod, rawPK map[string]interface{}) error {
+func decodeVM(vm *VerificationMethod, rawPK map[string]any) error {
 	if stringEntry(rawPK[jsonldPublicKeyBase58]) != "" {
 		vm.Value = base58.Decode(stringEntry(rawPK[jsonldPublicKeyBase58]))
 		return nil
@@ -998,7 +1000,7 @@ func decodeVM(vm *VerificationMethod, rawPK map[string]interface{}) error {
 	return errors.New("public key encoding not supported")
 }
 
-func decodeVMJwk(jwkMap map[string]interface{}, vm *VerificationMethod) error {
+func decodeVMJwk(jwkMap map[string]any, vm *VerificationMethod) error {
 	jwkBytes, err := json.Marshal(jwkMap)
 	if err != nil {
 		return fmt.Errorf("failed to marshal '%s', cause: %w ", jsonldPublicKeyjwk, err)
@@ -1033,9 +1035,9 @@ func parseContext(context Context) (Context, string) {
 	switch ctx := context.(type) {
 	case string, []string:
 		return ctx, ""
-	case []interface{}:
+	case []any:
 		// copy slice to prevent unexpected mutation
-		var newContext []interface{}
+		var newContext []any
 
 		var base string
 
@@ -1043,7 +1045,7 @@ func parseContext(context Context) (Context, string) {
 			switch value := v.(type) {
 			case string:
 				newContext = append(newContext, value)
-			case map[string]interface{}:
+			case map[string]any:
 				// preserve base value if it exists and is a string
 				if baseValue, ok := value["@base"].(string); ok {
 					base = baseValue
@@ -1086,21 +1088,22 @@ func validate(data []byte, schemaLoader gojsonschema.JSONLoader) error {
 	}
 
 	if !result.Valid() {
-		errMsg := "did document not valid:\n"
+		var errMsg strings.Builder
+		errMsg.WriteString("did document not valid:\n")
 		for _, desc := range result.Errors() {
-			errMsg += fmt.Sprintf("- %s\n", desc)
+			errMsg.WriteString(fmt.Sprintf("- %s\n", desc))
 		}
 
-		errMsg += fmt.Sprintf("Document: %s\n", string(data))
+		errMsg.WriteString(fmt.Sprintf("Document: %s\n", string(data)))
 
-		return errors.New(errMsg)
+		return errors.New(errMsg.String())
 	}
 
 	return nil
 }
 
 // stringEntry.
-func stringEntry(entry interface{}) string {
+func stringEntry(entry any) string {
 	if entry == nil {
 		return ""
 	}
@@ -1113,12 +1116,12 @@ func stringEntry(entry interface{}) string {
 }
 
 // stringArray.
-func stringArray(entry interface{}) []string {
+func stringArray(entry any) []string {
 	if entry == nil {
 		return nil
 	}
 
-	entries, ok := entry.([]interface{})
+	entries, ok := entry.([]any)
 	if !ok {
 		return nil
 	}
@@ -1134,12 +1137,12 @@ func stringArray(entry interface{}) []string {
 	return result
 }
 
-func mapEntry(entry interface{}) map[string]interface{} {
+func mapEntry(entry any) map[string]any {
 	if entry == nil {
 		return nil
 	}
 
-	result, ok := entry.(map[string]interface{})
+	result, ok := entry.(map[string]any)
 	if !ok {
 		return nil
 	}
@@ -1236,10 +1239,10 @@ func (doc *Doc) JSONBytes() ([]byte, error) {
 }
 
 func contextWithBase(doc *Doc) Context {
-	baseObject := make(map[string]interface{})
+	baseObject := make(map[string]any)
 	baseObject["@base"] = doc.processingMeta.baseURI
 
-	m := make([]interface{}, 0)
+	m := make([]any, 0)
 
 	switch ctx := doc.Context.(type) {
 	case string:
@@ -1248,7 +1251,7 @@ func contextWithBase(doc *Doc) Context {
 		for _, item := range ctx {
 			m = append(m, item)
 		}
-	case []interface{}:
+	case []any:
 		if len(ctx) > 0 {
 			m = append(m, ctx...)
 		}
@@ -1298,13 +1301,7 @@ func (doc *Doc) VerificationMethods(customVerificationRelationships ...Verificat
 			return true
 		}
 
-		for _, r := range customVerificationRelationships {
-			if r == relationship {
-				return true
-			}
-		}
-
-		return false
+		return slices.Contains(customVerificationRelationships, relationship)
 	}
 
 	verificationMethods := make(map[VerificationRelationship][]Verification)
@@ -1378,21 +1375,19 @@ func (r *didKeyResolver) Resolve(id string) (*api.PublicKey, error) {
 var ErrKeyNotFound = errors.New("key not found")
 
 //nolint:funlen,gocognit,gocyclo,nestif
-func (doc *Doc) populateRawServices() []map[string]interface{} {
+func (doc *Doc) populateRawServices() []map[string]any {
 	var (
 		services = doc.Service
 		didID    = doc.ID
 		baseURI  = doc.processingMeta.baseURI
 	)
 
-	var rawServices []map[string]interface{}
+	var rawServices []map[string]any
 
 	for i := range services {
-		rawService := make(map[string]interface{})
+		rawService := make(map[string]any)
 
-		for k, v := range services[i].Properties {
-			rawService[k] = v
-		}
+		maps.Copy(rawService, services[i].Properties)
 
 		routingKeys := make([]string, 0)
 
@@ -1458,7 +1453,7 @@ func (doc *Doc) populateRawServices() []map[string]interface{} {
 		rawService[jsonldType] = services[i].Type
 
 		if services[i].ServiceEndpoint.Type() == endpoint.DIDCommV2 { //nolint: gocritic
-			serviceEndpointMap := []map[string]interface{}{{"uri": sepURI}}
+			serviceEndpointMap := []map[string]any{{"uri": sepURI}}
 			if len(sepAccept) > 0 {
 				serviceEndpointMap[0]["accept"] = sepAccept
 			}
@@ -1497,8 +1492,8 @@ func (doc *Doc) populateRawServices() []map[string]interface{} {
 	return rawServices
 }
 
-func populateRawAlsoKnownAs(aka []string) []interface{} {
-	rawAka := make([]interface{}, len(aka))
+func populateRawAlsoKnownAs(aka []string) []any {
+	rawAka := make([]any, len(aka))
 
 	for i, v := range aka {
 		rawAka[i] = v
@@ -1507,8 +1502,8 @@ func populateRawAlsoKnownAs(aka []string) []interface{} {
 	return rawAka
 }
 
-func populateRawVM(context, didID, baseURI string, pks []VerificationMethod) ([]map[string]interface{}, error) {
-	var rawVM []map[string]interface{}
+func populateRawVM(context, didID, baseURI string, pks []VerificationMethod) ([]map[string]any, error) {
+	var rawVM []map[string]any
 
 	for i := range pks {
 		vm, err := populateRawVerificationMethod(context, didID, baseURI, &pks[i])
@@ -1523,8 +1518,8 @@ func populateRawVM(context, didID, baseURI string, pks []VerificationMethod) ([]
 }
 
 func populateRawVerificationMethod(context, didID, baseURI string,
-	vm *VerificationMethod) (map[string]interface{}, error) {
-	rawVM := make(map[string]interface{})
+	vm *VerificationMethod) (map[string]any, error) {
+	rawVM := make(map[string]any)
 	rawVM[jsonldID] = vm.ID
 
 	if vm.relativeURL {
@@ -1560,8 +1555,8 @@ func populateRawVerificationMethod(context, didID, baseURI string,
 	return rawVM, nil
 }
 
-func populateRawVerification(context, baseURI, didID string, verifications []Verification) ([]interface{}, error) {
-	var rawVerifications []interface{}
+func populateRawVerification(context, baseURI, didID string, verifications []Verification) ([]any, error) {
+	var rawVerifications []any
 
 	for _, v := range verifications {
 		if v.Embedded {
@@ -1584,8 +1579,8 @@ func populateRawVerification(context, baseURI, didID string, verifications []Ver
 	return rawVerifications, nil
 }
 
-func populateRawProofs(context, didID, baseURI string, proofs []Proof) []interface{} {
-	rawProofs := make([]interface{}, 0, len(proofs))
+func populateRawProofs(context, didID, baseURI string, proofs []Proof) []any {
+	rawProofs := make([]any, 0, len(proofs))
 
 	proofValueKey := jsonldProofValue
 
@@ -1599,7 +1594,7 @@ func populateRawProofs(context, didID, baseURI string, proofs []Proof) []interfa
 			creator = makeRelativeDIDURL(p.Creator, baseURI, didID)
 		}
 
-		rawProof := map[string]interface{}{
+		rawProof := map[string]any{
 			jsonldType:         p.Type,
 			jsonldCreated:      p.Created,
 			jsonldCreator:      creator,

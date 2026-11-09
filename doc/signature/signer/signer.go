@@ -42,7 +42,7 @@ func (signer *DocumentSigner) Sign(
 	jsonLdDoc []byte,
 	opts ...processor.Opts,
 ) ([]byte, error) {
-	var jsonLdObject map[string]interface{}
+	var jsonLdObject map[string]any
 
 	err := json.Unmarshal(jsonLdDoc, &jsonLdObject)
 	if err != nil {
@@ -63,7 +63,7 @@ func (signer *DocumentSigner) Sign(
 }
 
 // signObject is a helper method that operates on JSON LD objects.
-func (signer *DocumentSigner) signObject(context *Context, jsonLdObject map[string]interface{},
+func (signer *DocumentSigner) signObject(context *Context, jsonLdObject map[string]any,
 	opts []processor.Opts) error {
 	if err := isValidContext(context); err != nil {
 		return err

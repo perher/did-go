@@ -20,13 +20,13 @@ import (
 )
 
 func TestCreateVerifyHashAlgorithm(t *testing.T) {
-	proofOptions := map[string]interface{}{
+	proofOptions := map[string]any{
 		"type":    "type",
 		"creator": "key1",
 		"created": "2018-03-15T00:00:00Z",
 	}
 
-	var doc map[string]interface{}
+	var doc map[string]any
 	err := json.Unmarshal([]byte(validDoc), &doc)
 	require.NoError(t, err)
 
@@ -43,7 +43,7 @@ func TestCreateVerifyHashAlgorithm(t *testing.T) {
 }
 
 func TestPrepareCanonicalDocument(t *testing.T) {
-	var doc map[string]interface{}
+	var doc map[string]any
 	err := json.Unmarshal([]byte(test1), &doc)
 	require.NoError(t, err)
 
@@ -54,8 +54,8 @@ func TestPrepareCanonicalDocument(t *testing.T) {
 }
 
 func TestPrepareCanonicalProofOptions(t *testing.T) {
-	proofOptions := map[string]interface{}{
-		"@context": []interface{}{"https://w3id.org/did/v1"},
+	proofOptions := map[string]any{
+		"@context": []any{"https://w3id.org/did/v1"},
 		"type":     "type",
 		"creator":  "key1",
 		"created":  "2018-03-15T00:00:00Z",
@@ -89,7 +89,7 @@ func TestCreateVerifyData(t *testing.T) {
 		Creator: "key1",
 	}
 
-	var doc map[string]interface{}
+	var doc map[string]any
 	err = json.Unmarshal([]byte(validDoc), &doc)
 	require.NoError(t, err)
 
@@ -125,7 +125,7 @@ type mockSignatureSuite struct {
 }
 
 // GetCanonicalDocument will return normalized/canonical version of the document.
-func (s *mockSignatureSuite) GetCanonicalDocument(doc map[string]interface{},
+func (s *mockSignatureSuite) GetCanonicalDocument(doc map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	return processor.Default().GetCanonicalDocument(doc, opts...)
 }

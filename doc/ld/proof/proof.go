@@ -57,11 +57,11 @@ type Proof struct {
 	Challenge               string
 	SignatureRepresentation SignatureRepresentation
 	// CapabilityChain must be an array. Each element is either a string or an object.
-	CapabilityChain []interface{}
+	CapabilityChain []any
 }
 
 // NewProof creates new proof.
-func NewProof(emap map[string]interface{}) (*Proof, error) {
+func NewProof(emap map[string]any) (*Proof, error) {
 	created := stringEntry(emap[jsonldCreated])
 
 	timeValue, err := afgotime.ParseTimeWrapper(created)
@@ -117,14 +117,14 @@ func NewProof(emap map[string]interface{}) (*Proof, error) {
 	}, nil
 }
 
-func decodeCapabilityChain(proof map[string]interface{}) ([]interface{}, error) {
-	var capabilityChain []interface{}
+func decodeCapabilityChain(proof map[string]any) ([]any, error) {
+	var capabilityChain []any
 
 	untyped, found := proof[jsonldCapabilityChain]
 	if found {
 		var ok bool
 
-		capabilityChain, ok = untyped.([]interface{})
+		capabilityChain, ok = untyped.([]any)
 		if !ok {
 			return nil, fmt.Errorf("invalid format for capabilityChain - must be an array: %+v", untyped)
 		}
@@ -168,7 +168,7 @@ func DecodeProofValue(s, proofType string) ([]byte, error) {
 }
 
 // stringEntry.
-func stringEntry(entry interface{}) string {
+func stringEntry(entry any) string {
 	if entry == nil {
 		return ""
 	}
@@ -181,8 +181,8 @@ func stringEntry(entry interface{}) string {
 }
 
 // JSONLdObject returns map that represents JSON LD Object.
-func (p *Proof) JSONLdObject() map[string]interface{} { // nolint:gocyclo
-	emap := make(map[string]interface{})
+func (p *Proof) JSONLdObject() map[string]any { // nolint:gocyclo
+	emap := make(map[string]any)
 	emap[jsonldType] = p.Type
 
 	if p.Creator != "" {

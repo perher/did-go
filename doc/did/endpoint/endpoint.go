@@ -41,7 +41,7 @@ type ServiceEndpoint interface {
 type Endpoint struct {
 	rawDIDCommV2 []DIDCommV2Endpoint
 	rawDIDCommV1 string
-	rawObj       interface{}
+	rawObj       any
 }
 
 // DIDCommV2Endpoint contains ServiceEndpoint data specifically for DIDcommV2 and is wrapped in Endpoint as an array.
@@ -71,7 +71,7 @@ func NewDIDCommV1Endpoint(uri string) Endpoint {
 }
 
 // NewDIDCoreEndpoint creates a generic DIDCore endpoint.
-func NewDIDCoreEndpoint(genericEndpoint interface{}) Endpoint {
+func NewDIDCoreEndpoint(genericEndpoint any) Endpoint {
 	return Endpoint{
 		rawObj: genericEndpoint,
 	}
@@ -100,11 +100,11 @@ func (s *Endpoint) URI() (string, error) {
 			return o[0], nil
 		case [][]byte:
 			return string(o[0]), nil
-		case []interface{}:
+		case []any:
 			return fmt.Sprintf("%s", o[0]), nil
-		case map[string]interface{}:
+		case map[string]any:
 			switch uri := o["origins"].(type) {
-			case []interface{}:
+			case []any:
 				return fmt.Sprintf("%s", uri[0]), nil
 			default:
 				return "", fmt.Errorf("unrecognized DIDCore origins object %s", o)
@@ -161,7 +161,7 @@ func (s *Endpoint) MarshalJSON() ([]byte, error) {
 	}
 
 	if s.rawDIDCommV1 != "" {
-		return []byte(fmt.Sprintf("%q", s.rawDIDCommV1)), nil
+		return fmt.Appendf(nil, "%q", s.rawDIDCommV1), nil
 	}
 
 	if s.rawObj != nil {

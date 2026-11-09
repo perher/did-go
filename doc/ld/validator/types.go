@@ -7,6 +7,6 @@ package validator
 
 // Diff represents the difference between two objects.
 type Diff struct {
-	OriginalValue  interface{}
-	CompactedValue interface{}
+	OriginalValue  any
+	CompactedValue any
 }

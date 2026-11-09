@@ -36,18 +36,18 @@ func TestDocumentSigner_Sign(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, signedJWSDoc)
 
-	var signedJWSMap map[string]interface{}
+	var signedJWSMap map[string]any
 	err = json.Unmarshal(signedJWSDoc, &signedJWSMap)
 	require.NoError(t, err)
 
 	proofsIface, ok := signedJWSMap["proof"]
 	require.True(t, ok)
 
-	proofs, ok := proofsIface.([]interface{})
+	proofs, ok := proofsIface.([]any)
 	require.True(t, ok)
 	require.Len(t, proofs, 1)
 
-	proofMap, ok := proofs[0].(map[string]interface{})
+	proofMap, ok := proofs[0].(map[string]any)
 	require.True(t, ok)
 
 	require.Equal(t, "creator", proofMap["creator"])
@@ -77,7 +77,7 @@ func TestDocumentSigner_SignErrors(t *testing.T) {
 	require.Contains(t, err.Error(), "signature type non-existent not supported")
 
 	// test verify data creation error
-	var validDocMap map[string]interface{}
+	var validDocMap map[string]any
 
 	err = json.Unmarshal([]byte(validDoc), &validDocMap)
 	require.NoError(t, err)

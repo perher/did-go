@@ -114,7 +114,7 @@ func Default() *Processor {
 }
 
 // GetCanonicalDocument returns canonized document of given json ld.
-func (p *Processor) GetCanonicalDocument(doc map[string]interface{}, opts ...Opts) ([]byte, error) {
+func (p *Processor) GetCanonicalDocument(doc map[string]any, opts ...Opts) ([]byte, error) {
 	procOptions := prepareOpts(opts)
 
 	ldOptions := ld.NewJsonLdOptions("")
@@ -154,13 +154,13 @@ func (p *Processor) GetCanonicalDocument(doc map[string]interface{}, opts ...Opt
 
 // AppendExternalContexts appends external context(s) to the JSON-LD context which can have one
 // or several contexts already.
-func AppendExternalContexts(context interface{}, extraContexts ...string) []interface{} {
-	var contexts []interface{}
+func AppendExternalContexts(context any, extraContexts ...string) []any {
+	var contexts []any
 
 	switch c := context.(type) {
 	case string:
 		contexts = append(contexts, c)
-	case []interface{}:
+	case []any:
 		contexts = append(contexts, c...)
 	}
 
@@ -174,9 +174,9 @@ func AppendExternalContexts(context interface{}, extraContexts ...string) []inte
 // Compact compacts given json ld object.
 func (p *Processor) Compact(
 	input,
-	context map[string]interface{},
+	context map[string]any,
 	opts ...Opts,
-) (map[string]interface{}, error) {
+) (map[string]any, error) {
 	options, context := p.getContextAndOptions(input, context, opts...)
 
 	return ld.NewJsonLdProcessor().Compact(input, context, options)
@@ -185,9 +185,9 @@ func (p *Processor) Compact(
 // Expand expands given json ld object.
 func (p *Processor) Expand(
 	input,
-	context map[string]interface{},
+	context map[string]any,
 	opts ...Opts,
-) ([]interface{}, error) {
+) ([]any, error) {
 	options, _ := p.getContextAndOptions(input, context, opts...)
 
 	return ld.NewJsonLdProcessor().Expand(input, options)
@@ -214,15 +214,15 @@ func (p *Processor) getContextAndOptions(
 			input["@context"] = inputContext
 		}
 
-		context = map[string]interface{}{"@context": inputContext}
+		context = map[string]any{"@context": inputContext}
 	}
 
 	return ldOptions, context
 }
 
 // Frame makes a frame from the inputDoc using frameDoc.
-func (p *Processor) Frame(inputDoc map[string]interface{}, frameDoc map[string]interface{},
-	opts ...Opts) (map[string]interface{}, error) {
+func (p *Processor) Frame(inputDoc map[string]any, frameDoc map[string]any,
+	opts ...Opts) (map[string]any, error) {
 	procOptions := prepareOpts(opts)
 
 	ldOptions := ld.NewJsonLdOptions("")
@@ -278,14 +278,14 @@ func (p *Processor) Frame(inputDoc map[string]interface{}, frameDoc map[string]i
 	return framedInputDoc, nil
 }
 
-func removeDuplicateIDs(inputDoc map[string]interface{}, proc *ld.JsonLdProcessor,
-	options *ld.JsonLdOptions) (map[string]interface{}, map[string]string, error) {
+func removeDuplicateIDs(inputDoc map[string]any, proc *ld.JsonLdProcessor,
+	options *ld.JsonLdOptions) (map[string]any, map[string]string, error) {
 	duplicatedIDs, err := getDuplicatedIDs(inputDoc, proc, options)
 	if err != nil {
 		return nil, nil, fmt.Errorf("get duplicated ids: %w", err)
 	}
 
-	var inputDocCopy map[string]interface{}
+	var inputDocCopy map[string]any
 
 	var randomIds map[string]string
 
@@ -311,7 +311,7 @@ func removeDuplicateIDs(inputDoc map[string]interface{}, proc *ld.JsonLdProcesso
 	return inputDocCopy, randomIds, nil
 }
 
-func getDuplicatedIDs(doc map[string]interface{}, proc *ld.JsonLdProcessor, options *ld.JsonLdOptions) (
+func getDuplicatedIDs(doc map[string]any, proc *ld.JsonLdProcessor, options *ld.JsonLdOptions) (
 	map[string]bool, error) {
 	expand, err := proc.Expand(doc, options)
 	if err != nil {
@@ -341,7 +341,7 @@ func getDuplicatedIDs(doc map[string]interface{}, proc *ld.JsonLdProcessor, opti
 	return ids, nil
 }
 
-func visitJSONArray(a []interface{}, visitFunc func(key, val string) (string, bool)) {
+func visitJSONArray(a []any, visitFunc func(key, val string) (string, bool)) {
 	for i, v := range a {
 		switch kv := v.(type) {
 		case string:
@@ -349,16 +349,16 @@ func visitJSONArray(a []interface{}, visitFunc func(key, val string) (string, bo
 				a[i] = newValue
 			}
 
-		case []interface{}:
+		case []any:
 			visitJSONArray(kv, visitFunc)
 
-		case map[string]interface{}:
+		case map[string]any:
 			visitJSONMap(kv, visitFunc)
 		}
 	}
 }
 
-func visitJSONMap(m map[string]interface{}, visitFunc func(key, val string) (string, bool)) {
+func visitJSONMap(m map[string]any, visitFunc func(key, val string) (string, bool)) {
 	for k, v := range m {
 		switch kv := v.(type) {
 		case string:
@@ -366,10 +366,10 @@ func visitJSONMap(m map[string]interface{}, visitFunc func(key, val string) (str
 				m[k] = newID
 			}
 
-		case []interface{}:
+		case []any:
 			visitJSONArray(kv, visitFunc)
 
-		case map[string]interface{}:
+		case map[string]any:
 			visitJSONMap(kv, visitFunc)
 		}
 	}
@@ -442,8 +442,8 @@ func (p *Processor) normalizeFilteredDataset(view string) (string, error) {
 	return result.(string), nil //nolint:errcheck
 }
 
-func fromRDF(docStatements []string, context interface{},
-	opts ...Opts) (map[string]interface{}, error) {
+func fromRDF(docStatements []string, context any,
+	opts ...Opts) (map[string]any, error) {
 	procOptions := prepareOpts(opts)
 
 	ldOptions := ld.NewJsonLdOptions("")
@@ -479,8 +479,8 @@ func prepareOpts(opts []Opts) *processorOpts {
 	return procOpts
 }
 
-func (p *Processor) transformBlankNodes(docMap map[string]interface{},
-	opts ...Opts) (map[string]interface{}, error) {
+func (p *Processor) transformBlankNodes(docMap map[string]any,
+	opts ...Opts) (map[string]any, error) {
 	procOptions := prepareOpts(opts)
 
 	if !procOptions.frameBlankNodes {

@@ -1,5 +1,4 @@
 //go:build ACAPyInterop
-// +build ACAPyInterop
 
 /*
 Copyright SecureKey Technologies Inc. All Rights Reserved.

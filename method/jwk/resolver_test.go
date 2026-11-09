@@ -150,7 +150,7 @@ func TestCreateJsonWeKey(t *testing.T) {
 	})
 }
 
-func prettyPrint(result interface{}) error {
+func prettyPrint(result any) error {
 	b, err := json.MarshalIndent(result, "", " ")
 	if err != nil {
 		return err

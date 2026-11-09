@@ -26,7 +26,7 @@ type Context struct {
 	VerificationMethod      string                        // optional
 	Challenge               string                        // optional
 	Purpose                 string                        // optional
-	CapabilityChain         []interface{}                 // optional
+	CapabilityChain         []any                         // optional
 }
 
 // Signer wraps a set of SignerSuite instances and creates proofs on json LD documents.
@@ -40,13 +40,13 @@ type Verifier interface {
 	// Verify verifies a json LD proof on a document.
 	Verify(jsonLdDoc []byte, opts ...processor.Opts) error
 	// VerifyObject verifies a json LD proof on a document unmarshalled following json.Unmarshal conventions.
-	VerifyObject(jsonLdObject map[string]interface{}, opts ...processor.Opts) error
+	VerifyObject(jsonLdObject map[string]any, opts ...processor.Opts) error
 }
 
 // SignatureSuite provides common methods for signature suites.
 type SignatureSuite interface {
 	// GetCanonicalDocument will return normalized/canonical version of the document
-	GetCanonicalDocument(doc map[string]interface{}, opts ...processor.Opts) ([]byte, error)
+	GetCanonicalDocument(doc map[string]any, opts ...processor.Opts) ([]byte, error)
 
 	// GetDigest returns document digest
 	GetDigest(doc []byte) []byte
