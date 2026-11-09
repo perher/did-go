@@ -4,7 +4,7 @@
 
 module github.com/trustbloc/did-go
 
-go 1.25.3
+go 1.26
 
 require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
