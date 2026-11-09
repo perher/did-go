@@ -46,10 +46,10 @@ var literals = []string{"true", "false", "null"} //nolint:gochecknoglobals
 //nolint:funlen,gocyclo,nestif
 func Transform(jsonData []byte) (result []byte, e error) {
 	// JSON data MUST be UTF-8 encoded
-	var jsonDataLength int = len(jsonData)
+	var jsonDataLength = len(jsonData)
 
 	// Current pointer in jsonData
-	var index int = 0
+	var index = 0
 
 	// "Forward" declarations are needed for closures referring each other
 	var (
@@ -285,7 +285,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 
 		arrayData.WriteByte('[')
 
-		var next bool = false
+		var next = false
 		for globalError == nil && testNextNonWhiteSpaceChar() != ']' {
 			if next {
 				scanFor(',')
@@ -338,7 +338,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 	parseObject = func() string {
 		nameValueList := list.New()
 
-		var next bool = false
+		var next = false
 
 	CoreLoop:
 		for globalError == nil && testNextNonWhiteSpaceChar() != '}' {

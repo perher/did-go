@@ -315,10 +315,7 @@ type VerificationMethod struct {
 // raw public key bytes with multibase.
 func NewVerificationMethodFromBytesWithMultibase(id, keyType, controller string, value []byte,
 	encoding multibase.Encoding) *VerificationMethod {
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	return &VerificationMethod{
 		ID:                id,
@@ -332,10 +329,7 @@ func NewVerificationMethodFromBytesWithMultibase(id, keyType, controller string,
 
 // NewVerificationMethodFromBytes creates a new VerificationMethod based on raw public key bytes.
 func NewVerificationMethodFromBytes(id, keyType, controller string, value []byte) *VerificationMethod {
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	if keyType == "Ed25519VerificationKey2020" {
 		return NewVerificationMethodFromBytesWithMultibase(id, keyType, controller, value, multibase.Base58BTC)
@@ -357,10 +351,7 @@ func NewVerificationMethodFromJWK(id, keyType, controller string, j *jwk.JWK) (*
 		return nil, fmt.Errorf("convert JWK to public key bytes: %w", err)
 	}
 
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	return &VerificationMethod{
 		ID:          id,
