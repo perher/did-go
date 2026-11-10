@@ -1086,10 +1086,10 @@ func validate(data []byte, schemaLoader gojsonschema.JSONLoader) error {
 		var errMsg strings.Builder
 		errMsg.WriteString("did document not valid:\n")
 		for _, desc := range result.Errors() {
-			errMsg.WriteString(fmt.Sprintf("- %s\n", desc))
+			fmt.Fprintf(&errMsg, "- %s\n", desc)
 		}
 
-		errMsg.WriteString(fmt.Sprintf("Document: %s\n", string(data)))
+		fmt.Fprintf(&errMsg, "Document: %s\n", string(data))
 
 		return errors.New(errMsg.String())
 	}

@@ -132,7 +132,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 		u16, err := strconv.ParseUint(string(jsonData[start:index]), 16, 64)
 		checkError(err)
 
-		return rune(u16)
+		return rune(u16) //nolint:gosec // parsed from four hex digits, at most 0xFFFF
 	}
 
 	testNextNonWhiteSpaceChar := func() byte {
@@ -159,7 +159,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 			}
 			if c < firstNonControlChar {
 				// Other ASCII control characters must be escaped with \uhhhh
-				quotedString.WriteString(fmt.Sprintf("\\u%04x", c))
+				fmt.Fprintf(&quotedString, "\\u%04x", c)
 			} else {
 				quotedString.WriteByte(c)
 			}
