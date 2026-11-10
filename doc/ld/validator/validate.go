@@ -242,7 +242,7 @@ func validateContextURIPosition(contextURIPositions []string, docMap map[string]
 	return nil
 }
 
-// nolint:gocyclo,funlen
+//nolint:gocyclo,funlen,gocognit // refactor is risky; split when next changing this code
 func mapsHaveSameStructure(
 	originalMap,
 	compactedMap map[string]any,

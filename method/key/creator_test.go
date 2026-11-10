@@ -94,7 +94,7 @@ func TestBuild(t *testing.T) {
 	t.Run("build with NIST P-256 key type", func(t *testing.T) {
 		v := New()
 
-		x, y := elliptic.Unmarshal(elliptic.P256(), base58.Decode(pubKeyBase58P256))
+		x, y := elliptic.Unmarshal(elliptic.P256(), base58.Decode(pubKeyBase58P256)) //nolint:staticcheck // no drop-in replacement: crypto/ecdh lacks secp256k1 and errors where this panics
 		require.NotNil(t, x, "error parsing pubKeyBase58P256 public key")
 		key := ecdsa.PublicKey{
 			Curve: elliptic.P256(),
@@ -123,7 +123,7 @@ func TestBuild(t *testing.T) {
 	t.Run("build with NIST P-384 key type", func(t *testing.T) {
 		v := New()
 
-		x, y := elliptic.Unmarshal(elliptic.P384(), base58.Decode(pubKeyBase58P384))
+		x, y := elliptic.Unmarshal(elliptic.P384(), base58.Decode(pubKeyBase58P384)) //nolint:staticcheck // no drop-in replacement: crypto/ecdh lacks secp256k1 and errors where this panics
 		require.NotNil(t, x, "error parsing pubKeyBase58P384 public key")
 		key := ecdsa.PublicKey{
 			Curve: elliptic.P384(),
@@ -152,7 +152,7 @@ func TestBuild(t *testing.T) {
 	t.Run("build with NIST P-521 key type", func(t *testing.T) {
 		v := New()
 
-		x, y := elliptic.Unmarshal(elliptic.P521(), base58.Decode(pubKeyBase58P521))
+		x, y := elliptic.Unmarshal(elliptic.P521(), base58.Decode(pubKeyBase58P521)) //nolint:staticcheck // no drop-in replacement: crypto/ecdh lacks secp256k1 and errors where this panics
 		require.NotNil(t, x, "error parsing pubKeyBase58P521 public key")
 		key := ecdsa.PublicKey{
 			Curve: elliptic.P521(),

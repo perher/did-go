@@ -29,7 +29,7 @@ const (
 
 // resolveDID makes DID resolution via HTTP.
 func (v *VDR) resolveDID(uri string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, uri, nil)
+	req, err := http.NewRequest(http.MethodGet, uri, nil) //nolint:noctx // the public API takes no context.Context yet
 	if err != nil {
 		return nil, fmt.Errorf("HTTP create get request failed: %w", err)
 	}

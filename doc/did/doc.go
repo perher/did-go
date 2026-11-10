@@ -627,6 +627,7 @@ func populateVerificationRelationships(doc *Doc, raw *rawDoc) error {
 	return nil
 }
 
+//nolint:gocognit // refactor is risky; split when next changing this code
 func populateProofs(context, didID, baseURI string, rawProofs []any) ([]Proof, error) { // nolint:funlen,gocyclo
 	proofs := make([]Proof, 0, len(rawProofs))
 
@@ -699,7 +700,7 @@ func populateProofs(context, didID, baseURI string, rawProofs []any) ([]Proof, e
 	return proofs, nil
 }
 
-//nolint:funlen,gocyclo
+//nolint:funlen,gocyclo,gocognit // refactor is risky; split when next changing this code
 func populateServices(didID, baseURI string, rawServices []map[string]any) []Service {
 	services := make([]Service, 0, len(rawServices))
 

@@ -19,6 +19,7 @@
 
 // SPDX-License-Identifier: Apache-2.0
 
+//nolint:cyclop // Transform is a port of the reference JCS implementation
 package jsoncanonicalizer
 
 import (
@@ -47,7 +48,7 @@ var binaryEscapes = []byte{'\\', '"', '\b', '\f', '\n', '\r', '\t'} //nolint:goc
 // JSON literals.
 var literals = []string{"true", "false", "null"} //nolint:gochecknoglobals
 
-//nolint:funlen,gocyclo,nestif
+//nolint:funlen,gocyclo,nestif,gocognit,nonamedreturns // port of the reference JCS implementation; refactor is risky
 func Transform(jsonData []byte) (result []byte, e error) {
 	// JSON data MUST be UTF-8 encoded
 	var jsonDataLength = len(jsonData)

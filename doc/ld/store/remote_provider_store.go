@@ -147,6 +147,7 @@ func (s *RemoteProviderStoreImpl) Save(endpoint string) (*RemoteProviderRecord, 
 	return record, nil
 }
 
+//nolint:gocognit // refactor is risky; split when next changing this code
 func (s RemoteProviderStoreImpl) findEndpoint(endpoint string) (*RemoteProviderRecord, error) { // nolint:gocyclo
 	var (
 		foundRecord *RemoteProviderRecord

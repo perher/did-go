@@ -3782,7 +3782,7 @@ func verifyExpectedIterator(t *testing.T, actualResultsItr spi.Iterator, expecte
 	}
 }
 
-func verifyIteratorAnyOrder(t *testing.T, actualResultsItr spi.Iterator, //nolint: gocyclo,funlen // Test file
+func verifyIteratorAnyOrder(t *testing.T, actualResultsItr spi.Iterator, //nolint:gocyclo,funlen,gocognit // Test file
 	expectedKeys []string, expectedValues [][]byte, expectedTags [][]spi.Tag,
 	checkTotalItemsCount bool, expectedTotalItemsCount int) {
 	var dataChecklist struct {
