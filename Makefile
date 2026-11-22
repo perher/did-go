@@ -23,7 +23,7 @@ MOCK_VERSION 	?=v1.7.0-rc.1
 all: clean generate checks unit-test
 
 .PHONY: checks
-checks: generate license #lint
+checks: generate license lint
 
 .PHONY: lint
 lint: generate

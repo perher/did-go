@@ -14,7 +14,7 @@ import (
 )
 
 // EndpointType endpoint type.
-type EndpointType int // nolint: golint
+type EndpointType int
 
 const (
 	// DIDCommV1 type.

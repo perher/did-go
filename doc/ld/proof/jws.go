@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"maps"
+	"slices"
 	"strings"
 
 	"github.com/trustbloc/did-go/doc/ld/processor"
@@ -85,7 +86,7 @@ func createVerifyJWS(suite signatureSuite, jsonldDoc map[string]any, p *Proof,
 
 	docDigest := suite.GetDigest(canonicalDoc)
 
-	verifyData := append(proofOptionsDigest, docDigest...)
+	verifyData := slices.Concat(proofOptionsDigest, docDigest)
 
 	jwtHeader, err := getJWTHeader(p.JWS)
 	if err != nil {

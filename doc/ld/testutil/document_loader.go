@@ -9,6 +9,7 @@ package testutil
 import (
 	_ "embed" //nolint:gci // required for go:embed
 	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -117,7 +118,7 @@ func (m *mockProvider) JSONLDRemoteProviderStore() ldstore.RemoteProviderStore {
 }
 
 func createTestDocumentLoader(extraContexts ...ldcontext.Document) (*documentloader.DocumentLoader, error) {
-	contexts := append(testContexts, extraContexts...)
+	contexts := slices.Concat(testContexts, extraContexts)
 
 	p := &mockProvider{
 		ContextStore:        mockldstore.NewMockContextStore(),

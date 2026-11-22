@@ -60,7 +60,7 @@ func (v *VDR) Read(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolu
 		return nil, fmt.Errorf("error resolving did:web did --> could not parse did:web did --> %w", err)
 	}
 
-	resp, err := httpClient.Get(address)
+	resp, err := httpClient.Get(address) //nolint:noctx // the public API takes no context.Context yet
 	if err != nil {
 		return nil, fmt.Errorf("error resolving did:web did --> http request unsuccessful --> %w", err)
 	}

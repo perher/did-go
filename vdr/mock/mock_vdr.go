@@ -30,7 +30,7 @@ func (m *VDR) Read(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolu
 		return m.ReadFunc(didID, opts...)
 	}
 
-	return nil, nil
+	return nil, nil //nolint:nilnil // mock default when no func is set
 }
 
 // Create did.
@@ -39,7 +39,7 @@ func (m *VDR) Create(didDoc *did.Doc, opts ...vdrapi.DIDMethodOption) (*did.DocR
 		return m.CreateFunc(didDoc, opts...)
 	}
 
-	return nil, nil
+	return nil, nil //nolint:nilnil // mock default when no func is set
 }
 
 // Update did.

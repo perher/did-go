@@ -33,7 +33,7 @@ import (
 const invalidPattern uint64 = 0x7ff0000000000000
 
 //nolint:funlen,gocyclo,nestif
-func NumberToJSON(ieeeF64 float64) (res string, err error) {
+func NumberToJSON(ieeeF64 float64) (string, error) {
 	ieeeU64 := math.Float64bits(ieeeF64)
 
 	// Special case: NaN and Infinity are invalid in JSON
@@ -47,7 +47,7 @@ func NumberToJSON(ieeeF64 float64) (res string, err error) {
 	}
 
 	// Deal with the sign separately
-	var sign string = ""
+	var sign = ""
 
 	if ieeeF64 < 0 {
 		ieeeF64 = -ieeeF64

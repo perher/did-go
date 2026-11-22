@@ -19,6 +19,7 @@
 
 // SPDX-License-Identifier: Apache-2.0
 
+//nolint:cyclop // Transform is a port of the reference JCS implementation
 package jsoncanonicalizer
 
 import (
@@ -27,8 +28,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 	"unicode/utf16"
 )
+
+// firstNonControlChar is the ASCII space; bytes below it are control characters.
+const firstNonControlChar = 0x20
 
 type nameValueType struct {
 	name    string
@@ -43,13 +48,13 @@ var binaryEscapes = []byte{'\\', '"', '\b', '\f', '\n', '\r', '\t'} //nolint:goc
 // JSON literals.
 var literals = []string{"true", "false", "null"} //nolint:gochecknoglobals
 
-//nolint:funlen,gocyclo,nestif
+//nolint:funlen,gocyclo,nestif,gocognit,nonamedreturns // port of the reference JCS implementation; refactor is risky
 func Transform(jsonData []byte) (result []byte, e error) {
 	// JSON data MUST be UTF-8 encoded
-	var jsonDataLength int = len(jsonData)
+	var jsonDataLength = len(jsonData)
 
 	// Current pointer in jsonData
-	var index int = 0
+	var index = 0
 
 	// "Forward" declarations are needed for closures referring each other
 	var (
@@ -80,7 +85,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 	nextChar := func() byte {
 		if index < jsonDataLength {
 			c := jsonData[index]
-			if c > 0x7f {
+			if c > unicode.MaxASCII {
 				setError("Unexpected non-ASCII character")
 			}
 
@@ -127,7 +132,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 		u16, err := strconv.ParseUint(string(jsonData[start:index]), 16, 64)
 		checkError(err)
 
-		return rune(u16)
+		return rune(u16) //nolint:gosec // parsed from four hex digits, at most 0xFFFF
 	}
 
 	testNextNonWhiteSpaceChar := func() byte {
@@ -152,9 +157,9 @@ func Transform(jsonData []byte) (result []byte, e error) {
 					continue CoreLoop
 				}
 			}
-			if c < 0x20 {
+			if c < firstNonControlChar {
 				// Other ASCII control characters must be escaped with \uhhhh
-				quotedString.WriteString(fmt.Sprintf("\\u%04x", c))
+				fmt.Fprintf(&quotedString, "\\u%04x", c)
 			} else {
 				quotedString.WriteByte(c)
 			}
@@ -180,12 +185,14 @@ func Transform(jsonData []byte) (result []byte, e error) {
 			if c == '"' {
 				break
 			}
-			if c < ' ' {
+			switch {
+			case c < ' ':
 				setError("Unterminated string literal")
-			} else if c == '\\' {
+			case c == '\\':
 				// Escape sequence
 				c = nextChar()
-				if c == 'u' {
+				switch c {
+				case 'u':
 					// The \u escape
 					firstUTF16 := getUEscape()
 					if utf16.IsSurrogate(firstUTF16) {
@@ -201,10 +208,10 @@ func Transform(jsonData []byte) (result []byte, e error) {
 						// Single UTF-16 code identical to UTF-32.  Output as UTF-8
 						rawString.WriteRune(firstUTF16)
 					}
-				} else if c == '/' {
+				case '/':
 					// Benign but useless escape
 					rawString.WriteByte('/')
-				} else {
+				default:
 					// The JSON standard escapes
 					for i, esc := range asciiEscapes {
 						if esc == c {
@@ -214,7 +221,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 					}
 					setError("Unexpected escape: \\" + string(c))
 				}
-			} else {
+			default:
 				// Just an ordinary ASCII character alternatively a UTF-8 byte
 				// outside of ASCII.
 				// Note that properly formatted UTF-8 never clashes with ASCII
@@ -285,7 +292,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 
 		arrayData.WriteByte('[')
 
-		var next bool = false
+		var next = false
 		for globalError == nil && testNextNonWhiteSpaceChar() != ']' {
 			if next {
 				scanFor(',')
@@ -338,7 +345,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 	parseObject = func() string {
 		nameValueList := list.New()
 
-		var next bool = false
+		var next = false
 
 	CoreLoop:
 		for globalError == nil && testNextNonWhiteSpaceChar() != '}' {

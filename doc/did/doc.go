@@ -110,7 +110,10 @@ func Parse(did string) (*DID, error) {
 			"invalid did: %s. Make sure it conforms to the DID syntax: https://w3c.github.io/did-core/#did-syntax", did)
 	}
 
-	parts := strings.SplitN(did, ":", 3)
+	// did:<method>:<method-specific-id>
+	const didParts = 3
+
+	parts := strings.SplitN(did, ":", didParts)
 
 	return &DID{
 		Scheme:           "did",
@@ -120,7 +123,7 @@ func Parse(did string) (*DID, error) {
 }
 
 // DIDURL holds a DID URL.
-type DIDURL struct { //nolint:golint // ignore name stutter
+type DIDURL struct {
 	DID
 	Path     string
 	Queries  map[string][]string
@@ -315,10 +318,7 @@ type VerificationMethod struct {
 // raw public key bytes with multibase.
 func NewVerificationMethodFromBytesWithMultibase(id, keyType, controller string, value []byte,
 	encoding multibase.Encoding) *VerificationMethod {
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	return &VerificationMethod{
 		ID:                id,
@@ -332,10 +332,7 @@ func NewVerificationMethodFromBytesWithMultibase(id, keyType, controller string,
 
 // NewVerificationMethodFromBytes creates a new VerificationMethod based on raw public key bytes.
 func NewVerificationMethodFromBytes(id, keyType, controller string, value []byte) *VerificationMethod {
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	if keyType == "Ed25519VerificationKey2020" {
 		return NewVerificationMethodFromBytesWithMultibase(id, keyType, controller, value, multibase.Base58BTC)
@@ -357,10 +354,7 @@ func NewVerificationMethodFromJWK(id, keyType, controller string, j *jwk.JWK) (*
 		return nil, fmt.Errorf("convert JWK to public key bytes: %w", err)
 	}
 
-	relativeURL := false
-	if strings.HasPrefix(id, "#") {
-		relativeURL = true
-	}
+	relativeURL := strings.HasPrefix(id, "#")
 
 	return &VerificationMethod{
 		ID:          id,
@@ -633,6 +627,7 @@ func populateVerificationRelationships(doc *Doc, raw *rawDoc) error {
 	return nil
 }
 
+//nolint:gocognit // refactor is risky; split when next changing this code
 func populateProofs(context, didID, baseURI string, rawProofs []any) ([]Proof, error) { // nolint:funlen,gocyclo
 	proofs := make([]Proof, 0, len(rawProofs))
 
@@ -705,7 +700,7 @@ func populateProofs(context, didID, baseURI string, rawProofs []any) ([]Proof, e
 	return proofs, nil
 }
 
-//nolint:funlen,gocyclo
+//nolint:funlen,gocyclo,gocognit // refactor is risky; split when next changing this code
 func populateServices(didID, baseURI string, rawServices []map[string]any) []Service {
 	services := make([]Service, 0, len(rawServices))
 
@@ -1091,10 +1086,10 @@ func validate(data []byte, schemaLoader gojsonschema.JSONLoader) error {
 		var errMsg strings.Builder
 		errMsg.WriteString("did document not valid:\n")
 		for _, desc := range result.Errors() {
-			errMsg.WriteString(fmt.Sprintf("- %s\n", desc))
+			fmt.Fprintf(&errMsg, "- %s\n", desc)
 		}
 
-		errMsg.WriteString(fmt.Sprintf("Document: %s\n", string(data)))
+		fmt.Fprintf(&errMsg, "Document: %s\n", string(data))
 
 		return errors.New(errMsg.String())
 	}
