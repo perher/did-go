@@ -10,7 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+
 	"log"
 	"net/http"
 	"os"
@@ -33,7 +33,7 @@ var errorLogger = log.New(os.Stderr, " [did-go/vdr/web] ", log.Ldate|log.Ltime|l
 func (v *VDR) Read(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolution, error) { //nolint: gocyclo
 	httpClient := &http.Client{}
 
-	didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+	didOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 	// Apply options
 	for _, opt := range opts {
 		opt(didOpts)
@@ -71,7 +71,7 @@ func (v *VDR) Read(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolu
 		return nil, fmt.Errorf("http server returned status code [%d]", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error resolving did:web did --> error reading http response body: %s --> %w", body, err)
 	}

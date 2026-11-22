@@ -18,7 +18,7 @@ const jsonldContext = "@context"
 type signatureSuite interface {
 
 	// GetCanonicalDocument will return normalized/canonical version of the document
-	GetCanonicalDocument(doc map[string]interface{}, opts ...processor.Opts) ([]byte, error)
+	GetCanonicalDocument(doc map[string]any, opts ...processor.Opts) ([]byte, error)
 
 	// GetDigest returns document digest
 	GetDigest(doc []byte) []byte
@@ -42,7 +42,7 @@ const (
 // It depends on the signature value holder type.
 // In case of "proofValue", the standard Create Verify Hash algorithm is used.
 // In case of "jws", verify data is built as JSON Web Signature (JWS) with detached payload.
-func CreateVerifyData(suite signatureSuite, jsonldDoc map[string]interface{}, proof *Proof,
+func CreateVerifyData(suite signatureSuite, jsonldDoc map[string]any, proof *Proof,
 	opts ...processor.Opts) ([]byte, error) {
 	switch proof.SignatureRepresentation {
 	case SignatureProofValue:
@@ -56,7 +56,7 @@ func CreateVerifyData(suite signatureSuite, jsonldDoc map[string]interface{}, pr
 
 // CreateVerifyHash returns data that is used to generate or verify a digital signature
 // Algorithm steps are described here https://w3c-dvcg.github.io/ld-signatures/#create-verify-hash-algorithm
-func CreateVerifyHash(suite signatureSuite, jsonldDoc, proofOptions map[string]interface{},
+func CreateVerifyHash(suite signatureSuite, jsonldDoc, proofOptions map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	// in  order to generate canonical form we need context
 	// if context is not passed, use document's context
@@ -83,7 +83,7 @@ func CreateVerifyHash(suite signatureSuite, jsonldDoc, proofOptions map[string]i
 	return append(proofOptionsDigest, docDigest...), nil
 }
 
-func prepareCanonicalProofOptions(suite signatureSuite, proofOptions map[string]interface{},
+func prepareCanonicalProofOptions(suite signatureSuite, proofOptions map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	value, ok := proofOptions[jsonldCreated]
 	if !ok || value == nil {
@@ -91,7 +91,7 @@ func prepareCanonicalProofOptions(suite signatureSuite, proofOptions map[string]
 	}
 
 	// copy from the original proof options map without specific keys
-	proofOptionsCopy := make(map[string]interface{}, len(proofOptions))
+	proofOptionsCopy := make(map[string]any, len(proofOptions))
 
 	for key, value := range proofOptions {
 		if excludedKeyFromString(key) == 0 {
@@ -112,7 +112,7 @@ func prepareCanonicalProofOptions(suite signatureSuite, proofOptions map[string]
 	return suite.GetCanonicalDocument(proofOptionsCopy, opts...)
 }
 
-func prepareCanonicalDocument(suite signatureSuite, jsonldObject map[string]interface{},
+func prepareCanonicalDocument(suite signatureSuite, jsonldObject map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	// copy document object without proof
 	docCopy := GetCopyWithoutProof(jsonldObject)

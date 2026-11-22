@@ -51,11 +51,11 @@ func TestVerify(t *testing.T) {
 	require.Contains(t, err.Error(), "proof not found")
 
 	// public key ID is not found
-	var doc map[string]interface{}
+	var doc map[string]any
 	err = json.Unmarshal([]byte(validDoc), &doc)
 	require.NoError(t, err)
 
-	p, ok := doc["proof"].(map[string]interface{})
+	p, ok := doc["proof"].(map[string]any)
 	require.True(t, ok)
 	delete(p, "verificationMethod")
 
@@ -159,7 +159,7 @@ type testSignatureSuite struct {
 	compactProof bool
 }
 
-func (s *testSignatureSuite) GetCanonicalDocument(map[string]interface{}, ...processor.Opts) ([]byte, error) {
+func (s *testSignatureSuite) GetCanonicalDocument(map[string]any, ...processor.Opts) ([]byte, error) {
 	return s.canonicalDocument, s.canonicalDocumentError
 }
 

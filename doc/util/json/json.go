@@ -10,7 +10,7 @@ import (
 )
 
 // MarshalWithCustomFields marshals value merged with custom fields defined in the map into JSON bytes.
-func MarshalWithCustomFields(v interface{}, cf map[string]interface{}) ([]byte, error) {
+func MarshalWithCustomFields(v any, cf map[string]any) ([]byte, error) {
 	// Merge value and custom fields into the joint map.
 	vm, err := MergeCustomFields(v, cf)
 	if err != nil {
@@ -23,7 +23,7 @@ func MarshalWithCustomFields(v interface{}, cf map[string]interface{}) ([]byte, 
 
 // UnmarshalWithCustomFields unmarshals JSON into value v and puts all JSON fields which do not belong to value
 // into custom fields map cf.
-func UnmarshalWithCustomFields(data []byte, v interface{}, cf map[string]interface{}) error {
+func UnmarshalWithCustomFields(data []byte, v any, cf map[string]any) error {
 	err := json.Unmarshal(data, v)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func UnmarshalWithCustomFields(data []byte, v interface{}, cf map[string]interfa
 		return err
 	}
 
-	var vf map[string]interface{}
+	var vf map[string]any
 
 	err = json.Unmarshal(vData, &vf)
 	if err != nil {
@@ -43,7 +43,7 @@ func UnmarshalWithCustomFields(data []byte, v interface{}, cf map[string]interfa
 	}
 
 	// Collect all fields map.
-	var af map[string]interface{}
+	var af map[string]any
 
 	err = json.Unmarshal(data, &af)
 	if err != nil {
@@ -61,7 +61,7 @@ func UnmarshalWithCustomFields(data []byte, v interface{}, cf map[string]interfa
 }
 
 // MergeCustomFields converts value to the JSON-like map and merges it with custom fields map cf.
-func MergeCustomFields(v interface{}, cf map[string]interface{}) (map[string]interface{}, error) {
+func MergeCustomFields(v any, cf map[string]any) (map[string]any, error) {
 	kf, err := ToMap(v)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func MergeCustomFields(v interface{}, cf map[string]interface{}) (map[string]int
 }
 
 // ToMap convert object, string or bytes to json object represented by map.
-func ToMap(v interface{}) (map[string]interface{}, error) {
+func ToMap(v any) (map[string]any, error) {
 	var (
 		b   []byte
 		err error
@@ -96,7 +96,7 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	var m map[string]interface{}
+	var m map[string]any
 
 	err = json.Unmarshal(b, &m)
 	if err != nil {
@@ -107,8 +107,8 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 }
 
 // ToMaps convert array to array of json objects.
-func ToMaps(v []interface{}) ([]map[string]interface{}, error) {
-	maps := make([]map[string]interface{}, len(v))
+func ToMaps(v []any) ([]map[string]any, error) {
+	maps := make([]map[string]any, len(v))
 
 	for i := range v {
 		m, err := ToMap(v[i])

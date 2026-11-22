@@ -22,7 +22,7 @@ const (
 )
 
 func TestProof(t *testing.T) {
-	p, err := NewProof(map[string]interface{}{
+	p, err := NewProof(map[string]any{
 		"type":               "type",
 		"creator":            "didID",
 		"verificationMethod": "did:example:123456#key1",
@@ -49,7 +49,7 @@ func TestProof(t *testing.T) {
 	require.Equal(t, proofValueBytes, p.ProofValue)
 
 	// test proof with multibase encoding
-	p, err = NewProof(map[string]interface{}{
+	p, err = NewProof(map[string]any{
 		"type":               "Ed25519Signature2020",
 		"creator":            "didID",
 		"verificationMethod": "did:example:123456#key1",
@@ -76,7 +76,7 @@ func TestProof(t *testing.T) {
 	require.Equal(t, proofValueBytes, p.ProofValue)
 
 	// test created time with milliseconds section
-	p, err = NewProof(map[string]interface{}{
+	p, err = NewProof(map[string]any{
 		"type":               "type",
 		"creator":            "didID",
 		"verificationMethod": "did:example:123456#key1",
@@ -92,7 +92,7 @@ func TestProof(t *testing.T) {
 	require.Equal(t, created, p.Created.Time)
 
 	// test created time with zero milliseconds section
-	p, err = NewProof(map[string]interface{}{
+	p, err = NewProof(map[string]any{
 		"type":               "type",
 		"creator":            "didID",
 		"verificationMethod": "did:example:123456#key1",
@@ -110,7 +110,7 @@ func TestProof(t *testing.T) {
 		t.Run("parses capabilityChain", func(t *testing.T) {
 			cap1 := "http://edv.com/zcaps/1"
 			cap2 := "http://edv.com/zcaps/2"
-			p, err := NewProof(map[string]interface{}{
+			p, err := NewProof(map[string]any{
 				"type":               "type",
 				"creator":            "didID",
 				"verificationMethod": "did:example:123456#key1",
@@ -118,14 +118,14 @@ func TestProof(t *testing.T) {
 				"domain":             "abc.com",
 				"nonce":              "",
 				"proofValue":         proofValueBase64,
-				"capabilityChain":    []interface{}{cap1, cap2},
+				"capabilityChain":    []any{cap1, cap2},
 			})
 			require.NoError(t, err)
-			require.Equal(t, []interface{}{cap1, cap2}, p.CapabilityChain)
+			require.Equal(t, []any{cap1, cap2}, p.CapabilityChain)
 		})
 
 		t.Run("no capabiltyChain", func(t *testing.T) {
-			p, err := NewProof(map[string]interface{}{
+			p, err := NewProof(map[string]any{
 				"type":               "type",
 				"creator":            "didID",
 				"verificationMethod": "did:example:123456#key1",
@@ -139,7 +139,7 @@ func TestProof(t *testing.T) {
 		})
 
 		t.Run("fails if capability chain is not an []interface{}", func(t *testing.T) {
-			_, err := NewProof(map[string]interface{}{
+			_, err := NewProof(map[string]any{
 				"type":               "type",
 				"creator":            "didID",
 				"verificationMethod": "did:example:123456#key1",
@@ -161,7 +161,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               123,
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -178,7 +178,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -196,7 +196,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            123,
 			"verificationMethod": "did:example:123456#key1",
@@ -213,7 +213,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": 123,
@@ -230,7 +230,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -248,7 +248,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -266,7 +266,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -284,7 +284,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -301,7 +301,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -318,7 +318,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 			r := recover()
 			require.Nil(t, r)
 		}()
-		_, err := NewProof(map[string]interface{}{
+		_, err := NewProof(map[string]any{
 			"type":               "type",
 			"creator":            "didID",
 			"verificationMethod": "did:example:123456#key1",
@@ -334,7 +334,7 @@ func TestInvalidInterfaceTypeShouldNotPanic(t *testing.T) {
 
 func TestInvalidProofValue(t *testing.T) {
 	// invalid proof value
-	p, err := NewProof(map[string]interface{}{
+	p, err := NewProof(map[string]any{
 		"type":       "Ed25519Signature2018",
 		"creator":    "creator",
 		"created":    "2011-09-23T20:21:34Z",
@@ -345,7 +345,7 @@ func TestInvalidProofValue(t *testing.T) {
 	require.EqualError(t, err, "unsupported encoding")
 
 	// proof is not defined (neither "proofValue" nor "jws" is defined)
-	p, err = NewProof(map[string]interface{}{
+	p, err = NewProof(map[string]any{
 		"type":    "Ed25519Signature2018",
 		"creator": "creator",
 		"created": "2011-09-23T20:21:34Z",
@@ -356,7 +356,7 @@ func TestInvalidProofValue(t *testing.T) {
 }
 
 func TestInvalidNonce(t *testing.T) {
-	p, err := NewProof(map[string]interface{}{
+	p, err := NewProof(map[string]any{
 		"type":       "Ed25519Signature2018",
 		"creator":    "creator",
 		"created":    "2011-09-23T20:21:34Z",
@@ -435,11 +435,11 @@ func TestProof_JSONLdObject(t *testing.T) {
 				Domain:          "internal",
 				Nonce:           nonceBase64,
 				Challenge:       "sample-challenge-xyz",
-				CapabilityChain: []interface{}{capability},
+				CapabilityChain: []any{capability},
 			}
 			result := p.JSONLdObject()
 			r.Contains(result, "capabilityChain")
-			chain, ok := result["capabilityChain"].([]interface{})
+			chain, ok := result["capabilityChain"].([]any)
 			r.True(ok)
 			r.Len(chain, 1)
 			r.Equal(capability, chain[0])

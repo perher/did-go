@@ -8,7 +8,8 @@ package httpbinding
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
+
 	"net/http"
 	"net/url"
 	"path"
@@ -59,7 +60,7 @@ func (v *VDR) resolveDID(uri string) ([]byte, error) {
 
 	var gotBody []byte
 
-	gotBody, err = ioutil.ReadAll(resp.Body)
+	gotBody, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response body failed: %w", err)
 	}
@@ -76,7 +77,7 @@ func (v *VDR) resolveDID(uri string) ([]byte, error) {
 
 // Read implements didresolver.DidMethod.Read interface (https://w3c-ccg.github.io/did-resolution/#resolving-input)
 func (v *VDR) Read(didID string, opts ...vdrapi.DIDMethodOption) (*did.DocResolution, error) { //nolint: funlen,gocyclo
-	didMethodOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+	didMethodOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 
 	// Apply options
 	for _, opt := range opts {

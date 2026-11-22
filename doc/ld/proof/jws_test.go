@@ -39,7 +39,7 @@ func Test_createVerifyJWS(t *testing.T) {
 		ProofPurpose: "assertionMethod",
 	}
 
-	var doc map[string]interface{}
+	var doc map[string]any
 	err = json.Unmarshal([]byte(validDoc), &doc)
 	require.NoError(t, err)
 
@@ -71,11 +71,11 @@ func Test_createVerifyJWS(t *testing.T) {
 }
 
 func TestCreateDetachedJWTHeader(t *testing.T) {
-	getJwtHeaderMap := func(jwtHeaderB64 string) map[string]interface{} {
+	getJwtHeaderMap := func(jwtHeaderB64 string) map[string]any {
 		jwtHeaderBytes, err := base64.RawURLEncoding.DecodeString(jwtHeaderB64)
 		require.NoError(t, err)
 
-		var jwtHeaderMap map[string]interface{}
+		var jwtHeaderMap map[string]any
 		err = json.Unmarshal(jwtHeaderBytes, &jwtHeaderMap)
 		require.NoError(t, err)
 
@@ -88,7 +88,7 @@ func TestCreateDetachedJWTHeader(t *testing.T) {
 	jwtHeaderMap := getJwtHeaderMap(jwtHeader)
 	require.Equal(t, "EdDSA", jwtHeaderMap["alg"])
 	require.Equal(t, false, jwtHeaderMap["b64"])
-	require.Equal(t, []interface{}{"b64"}, jwtHeaderMap["crit"])
+	require.Equal(t, []any{"b64"}, jwtHeaderMap["crit"])
 
 	jwtHeader = CreateDetachedJWTHeader("ES256K")
 	require.NotEmpty(t, jwtHeader)
@@ -96,7 +96,7 @@ func TestCreateDetachedJWTHeader(t *testing.T) {
 	jwtHeaderMap = getJwtHeaderMap(jwtHeader)
 	require.Equal(t, "ES256K", jwtHeaderMap["alg"])
 	require.Equal(t, false, jwtHeaderMap["b64"])
-	require.Equal(t, []interface{}{"b64"}, jwtHeaderMap["crit"])
+	require.Equal(t, []any{"b64"}, jwtHeaderMap["crit"])
 
 	jwtHeader = CreateDetachedJWTHeader("EdDSA")
 	require.NotEmpty(t, jwtHeader)
@@ -104,7 +104,7 @@ func TestCreateDetachedJWTHeader(t *testing.T) {
 	jwtHeaderMap = getJwtHeaderMap(jwtHeader)
 	require.Equal(t, "EdDSA", jwtHeaderMap["alg"])
 	require.Equal(t, false, jwtHeaderMap["b64"])
-	require.Equal(t, []interface{}{"b64"}, jwtHeaderMap["crit"])
+	require.Equal(t, []any{"b64"}, jwtHeaderMap["crit"])
 }
 
 func TestGetJWTSignature(t *testing.T) {

@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"maps"
 	"strings"
 
 	"github.com/trustbloc/did-go/doc/ld/processor"
@@ -27,7 +28,7 @@ const (
 
 // CreateDetachedJWTHeader creates detached JWT header.
 func CreateDetachedJWTHeader(alg string) string {
-	jwtHeaderMap := map[string]interface{}{
+	jwtHeaderMap := map[string]any{
 		"alg":  alg,
 		"b64":  false,
 		"crit": []string{"b64"},
@@ -66,7 +67,7 @@ func getJWTHeader(jwt string) (string, error) {
 // It differs by using https://w3id.org/security/v2 as context for JSON-LD canonization of both
 // JSON and Signature documents and by preliminary JSON-LD compacting of JSON document.
 // The current implementation is based on the https://github.com/digitalbazaar/jsonld-signatures.
-func createVerifyJWS(suite signatureSuite, jsonldDoc map[string]interface{}, p *Proof,
+func createVerifyJWS(suite signatureSuite, jsonldDoc map[string]any, p *Proof,
 	opts ...processor.Opts) ([]byte, error) {
 	proofOptions := p.JSONLdObject()
 
@@ -94,15 +95,13 @@ func createVerifyJWS(suite signatureSuite, jsonldDoc map[string]interface{}, p *
 	return append([]byte(jwtHeader+"."), verifyData...), nil
 }
 
-func prepareJWSProof(suite signatureSuite, proofOptions map[string]interface{},
+func prepareJWSProof(suite signatureSuite, proofOptions map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	// TODO proof contexts shouldn't be hardcoded in jws, should be passed in jsonld doc by author [Issue#1833]
-	proofOptions[jsonldContext] = []interface{}{securityContext, securityContextJWK2020}
-	proofOptionsCopy := make(map[string]interface{}, len(proofOptions))
+	proofOptions[jsonldContext] = []any{securityContext, securityContextJWK2020}
+	proofOptionsCopy := make(map[string]any, len(proofOptions))
 
-	for key, value := range proofOptions {
-		proofOptionsCopy[key] = value
-	}
+	maps.Copy(proofOptionsCopy, proofOptions)
 
 	delete(proofOptionsCopy, jsonldJWS)
 	delete(proofOptionsCopy, jsonldProofValue)
@@ -110,7 +109,7 @@ func prepareJWSProof(suite signatureSuite, proofOptions map[string]interface{},
 	return suite.GetCanonicalDocument(proofOptionsCopy, opts...)
 }
 
-func prepareDocumentForJWS(suite signatureSuite, jsonldObject map[string]interface{},
+func prepareDocumentForJWS(suite signatureSuite, jsonldObject map[string]any,
 	opts ...processor.Opts) ([]byte, error) {
 	// copy document object without proof
 	doc := GetCopyWithoutProof(jsonldObject)
@@ -128,9 +127,9 @@ func prepareDocumentForJWS(suite signatureSuite, jsonldObject map[string]interfa
 	return suite.GetCanonicalDocument(doc, opts...)
 }
 
-func getCompactedWithSecuritySchema(docMap map[string]interface{},
-	opts ...processor.Opts) (map[string]interface{}, error) {
-	contextMap := map[string]interface{}{
+func getCompactedWithSecuritySchema(docMap map[string]any,
+	opts ...processor.Opts) (map[string]any, error) {
+	contextMap := map[string]any{
 		"@context": securityContext,
 	}
 

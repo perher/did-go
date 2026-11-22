@@ -14,18 +14,18 @@ const (
 )
 
 // GetProofs gets proof(s) from LD Object.
-func GetProofs(jsonLdObject map[string]interface{}) ([]*Proof, error) {
+func GetProofs(jsonLdObject map[string]any) ([]*Proof, error) {
 	entry, ok := jsonLdObject[jsonldProof]
 	if !ok {
 		return nil, ErrProofNotFound
 	}
 
-	var typedEntry []interface{}
+	var typedEntry []any
 	switch te := entry.(type) {
-	case []interface{}:
+	case []any:
 		typedEntry = te
-	case map[string]interface{}:
-		typedEntry = []interface{}{te}
+	case map[string]any:
+		typedEntry = []any{te}
 	default:
 		return nil, errors.New("expecting []interface{} or map[string]interface{}, got something else")
 	}
@@ -33,7 +33,7 @@ func GetProofs(jsonLdObject map[string]interface{}) ([]*Proof, error) {
 	var result []*Proof
 
 	for _, e := range typedEntry {
-		emap, ok := e.(map[string]interface{})
+		emap, ok := e.(map[string]any)
 		if !ok {
 			return nil, errors.New("wrong interface, expecting []interface{}")
 		}
@@ -50,17 +50,17 @@ func GetProofs(jsonLdObject map[string]interface{}) ([]*Proof, error) {
 }
 
 // AddProof adds a proof to LD Object.
-func AddProof(jsonLdObject map[string]interface{}, proof *Proof) error {
-	var proofs []interface{}
+func AddProof(jsonLdObject map[string]any, proof *Proof) error {
+	var proofs []any
 
 	entry, exists := jsonLdObject[jsonldProof]
 
 	if exists {
 		switch p := entry.(type) {
-		case []interface{}:
+		case []any:
 			proofs = p
 		default:
-			proofs = []interface{}{p}
+			proofs = []any{p}
 		}
 	}
 
@@ -71,12 +71,12 @@ func AddProof(jsonLdObject map[string]interface{}, proof *Proof) error {
 }
 
 // GetCopyWithoutProof gets copy of JSON LD Object without proofs (signatures).
-func GetCopyWithoutProof(jsonLdObject map[string]interface{}) map[string]interface{} {
+func GetCopyWithoutProof(jsonLdObject map[string]any) map[string]any {
 	if jsonLdObject == nil {
 		return nil
 	}
 
-	dest := make(map[string]interface{})
+	dest := make(map[string]any)
 
 	for k, v := range jsonLdObject {
 		if k != jsonldProof {

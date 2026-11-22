@@ -90,7 +90,7 @@ func ValidateJSONLD(doc string, options ...ValidateOpts) error {
 
 // ValidateJSONLDMap validates jsonld structure.
 func ValidateJSONLDMap(
-	docMap map[string]interface{},
+	docMap map[string]any,
 	options ...ValidateOpts,
 ) error {
 	opts := getValidateOpts(options)
@@ -130,7 +130,7 @@ func ValidateJSONLDMap(
 
 // ValidateJSONLDTypes validates JSON-LD types.
 func ValidateJSONLDTypes(
-	docMap map[string]interface{},
+	docMap map[string]any,
 	options ...ValidateOpts,
 ) error {
 	typesObj, typeObjOk := docMap["type"]
@@ -139,11 +139,11 @@ func ValidateJSONLDTypes(
 		return nil
 	}
 
-	types, typesOk := typesObj.([]interface{})
+	types, typesOk := typesObj.([]any)
 	if !typesOk {
 		typeStr, typeStrOk := typesObj.(string)
 		if typeStrOk {
-			types = []interface{}{typeStr}
+			types = []any{typeStr}
 		} else {
 			return errors.New("type must be an array or string")
 		}
@@ -176,7 +176,7 @@ func validateTypesInExpandedDoc(
 		return fmt.Errorf("expanded document must contain only one element, got %d", len(docExpanded))
 	}
 
-	docExpandedMap, ok := docExpanded[0].(map[string]interface{})
+	docExpandedMap, ok := docExpanded[0].(map[string]any)
 	if !ok {
 		return fmt.Errorf("document must be a map, got %s", reflect.TypeOf(docExpanded[0]).String())
 	}
@@ -186,7 +186,7 @@ func validateTypesInExpandedDoc(
 		return errors.New("expanded document does not contain @type")
 	}
 
-	expandedTypes, expandedTypesOk := expandedTypesObj.([]interface{})
+	expandedTypes, expandedTypesOk := expandedTypesObj.([]any)
 	if !expandedTypesOk {
 		return errors.New("expanded @type must be an array")
 	}
@@ -210,17 +210,17 @@ func validateTypesInExpandedDoc(
 	return nil
 }
 
-func validateContextURIPosition(contextURIPositions []string, docMap map[string]interface{}) error {
+func validateContextURIPosition(contextURIPositions []string, docMap map[string]any) error {
 	if len(contextURIPositions) == 0 {
 		return nil
 	}
 
-	var docContexts []interface{}
+	var docContexts []any
 
 	switch t := docMap["@context"].(type) {
 	case string:
 		docContexts = append(docContexts, t)
-	case []interface{}:
+	case []any:
 		docContexts = append(docContexts, t...)
 	}
 
@@ -245,7 +245,7 @@ func validateContextURIPosition(contextURIPositions []string, docMap map[string]
 // nolint:gocyclo,funlen
 func mapsHaveSameStructure(
 	originalMap,
-	compactedMap map[string]interface{},
+	compactedMap map[string]any,
 	path string,
 ) map[string][]*Diff {
 	original := compactMap(originalMap)
@@ -279,7 +279,7 @@ func mapsHaveSameStructure(
 	for k, v1 := range original {
 		diffKey := path + "." + k
 
-		v1Map, isMap := v1.(map[string]interface{})
+		v1Map, isMap := v1.(map[string]any)
 		if !isMap {
 			continue
 		}
@@ -289,13 +289,13 @@ func mapsHaveSameStructure(
 			continue // should not be counted as diff
 		}
 
-		v2Map, isMap := v2.(map[string]interface{})
+		v2Map, isMap := v2.(map[string]any)
 		if !isMap {
 			diffs[diffKey] = append(diffs[diffKey], &Diff{OriginalValue: v1, CompactedValue: v2})
 		}
 
 		if v2Map == nil {
-			v2Map = make(map[string]interface{})
+			v2Map = make(map[string]any)
 		}
 
 		mp := mapsHaveSameStructure(v1Map, v2Map, diffKey)
@@ -307,15 +307,15 @@ func mapsHaveSameStructure(
 	return diffs
 }
 
-func findMapDiff(originalMap, compactedMap map[string]interface{}) map[string][]*Diff {
+func findMapDiff(originalMap, compactedMap map[string]any) map[string][]*Diff {
 	originalMap = compactMap(originalMap)
 	compactedMap = compactMap(compactedMap)
 
 	return mapsHaveSameStructure(originalMap, compactedMap, "$")
 }
 
-func compactMap(m map[string]interface{}) map[string]interface{} {
-	mCopy := make(map[string]interface{})
+func compactMap(m map[string]any) map[string]any {
+	mCopy := make(map[string]any)
 
 	for k, v := range m {
 		// ignore context
@@ -326,10 +326,10 @@ func compactMap(m map[string]interface{}) map[string]interface{} {
 		vNorm := compactValue(v)
 
 		switch kv := vNorm.(type) {
-		case []interface{}:
+		case []any:
 			mCopy[k] = compactSlice(kv)
 
-		case map[string]interface{}:
+		case map[string]any:
 			mCopy[k] = compactMap(kv)
 
 		default:
@@ -340,14 +340,14 @@ func compactMap(m map[string]interface{}) map[string]interface{} {
 	return mCopy
 }
 
-func compactSlice(s []interface{}) []interface{} {
-	sCopy := make([]interface{}, len(s))
+func compactSlice(s []any) []any {
+	sCopy := make([]any, len(s))
 
 	for i := range s {
 		sItem := compactValue(s[i])
 
 		switch sItem := sItem.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			sCopy[i] = compactMap(sItem)
 
 		default:
@@ -358,9 +358,9 @@ func compactSlice(s []interface{}) []interface{} {
 	return sCopy
 }
 
-func compactValue(v interface{}) interface{} {
+func compactValue(v any) any {
 	switch cv := v.(type) {
-	case []interface{}:
+	case []any:
 		// consists of only one element
 		if len(cv) == 1 {
 			return compactValue(cv[0])
@@ -368,7 +368,7 @@ func compactValue(v interface{}) interface{} {
 
 		return cv
 
-	case map[string]interface{}:
+	case map[string]any:
 		// contains "id" element only
 		if len(cv) == 1 {
 			if _, ok := cv["id"]; ok {

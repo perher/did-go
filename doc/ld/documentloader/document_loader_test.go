@@ -285,7 +285,7 @@ func assertContextInStore(t *testing.T, store storage.Store, url, value string) 
 	err = json.Unmarshal(b, &rd)
 	require.NoError(t, err)
 
-	require.Equal(t, value, rd.Document.(map[string]interface{})["@context"])
+	require.Equal(t, value, rd.Document.(map[string]any)["@context"])
 }
 
 type provider struct {

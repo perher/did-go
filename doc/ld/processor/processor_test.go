@@ -185,7 +185,7 @@ func TestGetCanonicalDocument(t *testing.T) {
 		for _, test := range tests {
 			tc := test
 			t.Run(tc.name, func(t *testing.T) {
-				var jsonldDoc map[string]interface{}
+				var jsonldDoc map[string]any
 				err := json.Unmarshal([]byte(tc.doc), &jsonldDoc)
 				require.NoError(t, err)
 
@@ -206,19 +206,19 @@ func TestGetCanonicalDocument(t *testing.T) {
 
 func TestCompact(t *testing.T) {
 	t.Run("Test json ld processor compact", func(t *testing.T) {
-		doc := map[string]interface{}{
+		doc := map[string]any{
 			"@id": "http://example.org/test#book",
-			"http://example.org/vocab#contains": map[string]interface{}{
+			"http://example.org/vocab#contains": map[string]any{
 				"@id": "http://example.org/test#chapter",
 			},
 			"http://purl.org/dc/elements/1.1/title": "Title",
 		}
 
-		context := map[string]interface{}{
-			"@context": map[string]interface{}{
+		context := map[string]any{
+			"@context": map[string]any{
 				"dc": "http://purl.org/dc/elements/1.1/",
 				"ex": "http://example.org/vocab#",
-				"ex:contains": map[string]interface{}{
+				"ex:contains": map[string]any{
 					"@type": "@id",
 				},
 			},
@@ -239,7 +239,7 @@ func TestCompact(t *testing.T) {
 func TestProcessor_Frame(t *testing.T) {
 	processor := processor.Default()
 
-	var doc map[string]interface{}
+	var doc map[string]any
 
 	err := json.Unmarshal([]byte(jsonLDSample1), &doc)
 	require.NoError(t, err)
@@ -257,7 +257,7 @@ func TestProcessor_Frame(t *testing.T) {
 	 }
 	}`
 
-	var frameDoc map[string]interface{}
+	var frameDoc map[string]any
 
 	err = json.Unmarshal([]byte(frameJSON), &frameDoc)
 	require.NoError(t, err)
@@ -265,31 +265,31 @@ func TestProcessor_Frame(t *testing.T) {
 	framedView, err := processor.Frame(doc, frameDoc, testutil.WithDocumentLoader(t))
 	require.NoError(t, err)
 
-	require.Equal(t, map[string]interface{}{
+	require.Equal(t, map[string]any{
 		"id":     "did:example:ebfeb1f712ebc6f1c276e12ec21",
 		"spouse": "did:example:c276e12ec21ebfeb1f712ebc6f1",
 	}, framedView["credentialSubject"])
 
 	// Use the same ID for issuer and credentialSubject
-	issuerMap, ok := doc["issuer"].(map[string]interface{})
+	issuerMap, ok := doc["issuer"].(map[string]any)
 	require.True(t, ok)
 
-	subjectMap, ok := doc["credentialSubject"].(map[string]interface{})
+	subjectMap, ok := doc["credentialSubject"].(map[string]any)
 	require.True(t, ok)
 
 	subjectMap["id"] = issuerMap["id"]
 	framedView, err = processor.Frame(doc, frameDoc, testutil.WithDocumentLoader(t))
 	require.NoError(t, err)
 
-	require.Equal(t, map[string]interface{}{
+	require.Equal(t, map[string]any{
 		"id":     "did:elem:EiBJJPdo-ONF0jxqt8mZYEj9Z7FbdC87m2xvN0_HAbcoEg",
 		"spouse": "did:example:c276e12ec21ebfeb1f712ebc6f1",
 	}, framedView["credentialSubject"])
 
 	// Set several subjects, one with the same ID as issuer.
-	doc["credentialSubject"] = []interface{}{
+	doc["credentialSubject"] = []any{
 		subjectMap,
-		map[string]interface{}{
+		map[string]any{
 			"id":     "did:example:ebfeb1f712ebc6f1c276e12ec21",
 			"name":   "Jayden Doe",
 			"spouse": "did:example:c276e12ec21ebfeb1f712ebc6f2",
@@ -302,12 +302,12 @@ func TestProcessor_Frame(t *testing.T) {
 	framedView, err = processor.Frame(doc, frameDoc, testutil.WithDocumentLoader(t))
 	require.NoError(t, err)
 
-	require.Equal(t, []interface{}{
-		map[string]interface{}{
+	require.Equal(t, []any{
+		map[string]any{
 			"id":     "did:elem:EiBJJPdo-ONF0jxqt8mZYEj9Z7FbdC87m2xvN0_HAbcoEg",
 			"spouse": "did:example:c276e12ec21ebfeb1f712ebc6f1",
 		},
-		map[string]interface{}{
+		map[string]any{
 			"id":     "did:example:ebfeb1f712ebc6f1c276e12ec21",
 			"spouse": "did:example:c276e12ec21ebfeb1f712ebc6f2",
 		},
@@ -497,7 +497,7 @@ func BenchmarkGetCanonicalDocument(b *testing.B) {
 			var sink string
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
-					var jsonldDoc map[string]interface{}
+					var jsonldDoc map[string]any
 					err := json.Unmarshal([]byte(tc.doc), &jsonldDoc)
 					require.NoError(b, err)
 

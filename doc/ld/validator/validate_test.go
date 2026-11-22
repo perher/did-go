@@ -581,7 +581,7 @@ func TestDiffOnEduCred(t *testing.T) {
 				},
 			},
 		},
-		"type": []interface{}{
+		"type": []any{
 			"VerifiableCredential",
 			"UniversityDegreeCredential",
 		},
@@ -594,7 +594,7 @@ func TestDiffOnEduCred(t *testing.T) {
 			"id":          "some-id",
 			"schema:name": []any{},
 		},
-		"type": []interface{}{
+		"type": []any{
 			"VerifiableCredential",
 			"UniversityDegreeCredential",
 		},
@@ -613,7 +613,7 @@ func TestValidateType(t *testing.T) {
 	loader := ld.NewCachingDocumentLoader(ld.NewDefaultDocumentLoader(http.DefaultClient))
 
 	t.Run("invalid type", func(t *testing.T) {
-		var parsed map[string]interface{}
+		var parsed map[string]any
 		assert.NoError(t, json.Unmarshal(credentialWithInvalidType, &parsed))
 
 		err := ValidateJSONLDTypes(parsed, WithDocumentLoader(loader))
@@ -625,21 +625,21 @@ func TestValidateType(t *testing.T) {
 	})
 
 	t.Run("no types", func(t *testing.T) {
-		var parsed map[string]interface{}
+		var parsed map[string]any
 		assert.NoError(t, json.Unmarshal([]byte(`{"a" : "b"}`), &parsed))
 
 		assert.NoError(t, ValidateJSONLDTypes(parsed, WithDocumentLoader(loader)))
 	})
 
 	t.Run("valid", func(t *testing.T) {
-		var parsed map[string]interface{}
+		var parsed map[string]any
 		assert.NoError(t, json.Unmarshal(credentialWithValidType, &parsed))
 
 		assert.NoError(t, ValidateJSONLDTypes(parsed, WithDocumentLoader(loader)))
 	})
 
 	t.Run("valid 2", func(t *testing.T) {
-		var parsed map[string]interface{}
+		var parsed map[string]any
 		assert.NoError(t, json.Unmarshal([]byte(`{
   "@context": [
     "https://www.w3.org/2018/credentials/v1",

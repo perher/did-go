@@ -10,7 +10,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -33,7 +33,7 @@ func TestProvider_Contexts(t *testing.T) {
 			DoFunc: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(bytes.NewReader(respBytes)),
+					Body:       io.NopCloser(bytes.NewReader(respBytes)),
 				}, nil
 			},
 		}))
@@ -62,7 +62,7 @@ func TestProvider_Contexts(t *testing.T) {
 			DoFunc: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{
 					StatusCode: http.StatusInternalServerError,
-					Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
+					Body:       io.NopCloser(bytes.NewReader([]byte(""))),
 				}, nil
 			},
 		}))
@@ -78,7 +78,7 @@ func TestProvider_Contexts(t *testing.T) {
 			DoFunc: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(bytes.NewReader([]byte("invalid response"))),
+					Body:       io.NopCloser(bytes.NewReader([]byte("invalid response"))),
 				}, nil
 			},
 		}))

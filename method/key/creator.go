@@ -35,7 +35,7 @@ const (
 //
 //nolint:gocyclo
 func (v *VDR) Create(didDoc *did.Doc, opts ...vdrapi.DIDMethodOption) (*did.DocResolution, error) {
-	createDIDOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]interface{})}
+	createDIDOpts := &vdrapi.DIDMethodOpts{Values: make(map[string]any)}
 	// Apply options
 	for _, opt := range opts {
 		opt(createDIDOpts)

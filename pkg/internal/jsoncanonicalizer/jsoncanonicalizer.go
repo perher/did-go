@@ -308,10 +308,7 @@ func Transform(jsonData []byte) (result []byte, e error) {
 		// Find the minimum length of the sortKeys
 		oldSortKey := e.Value.(nameValueType).sortKey //nolint:errcheck
 
-		minLength := len(oldSortKey)
-		if minLength > len(sortKey) {
-			minLength = len(sortKey)
-		}
+		minLength := min(len(oldSortKey), len(sortKey))
 
 		for q := range minLength {
 			diff := int(sortKey[q]) - int(oldSortKey[q])

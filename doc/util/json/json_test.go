@@ -29,14 +29,14 @@ func Test_marshalJSON(t *testing.T) {
 			I: 7,
 		}
 
-		cf := map[string]interface{}{
+		cf := map[string]any{
 			"boolValue": false,
 			"intValue":  8,
 		}
 		actual, err := MarshalWithCustomFields(&v, cf)
 		require.NoError(t, err)
 
-		expectedMap := map[string]interface{}{
+		expectedMap := map[string]any{
 			"stringSlice": []string{"a", "b", "c"},
 			"intValue":    7,
 			"boolValue":   false,
@@ -49,14 +49,14 @@ func Test_marshalJSON(t *testing.T) {
 
 	t.Run("Failed JSON marshall", func(t *testing.T) {
 		// artificial example - pass smth which cannot be marshalled
-		jsonBytes, err := MarshalWithCustomFields(make(chan int), map[string]interface{}{})
+		jsonBytes, err := MarshalWithCustomFields(make(chan int), map[string]any{})
 		require.Error(t, err)
 		require.Nil(t, jsonBytes)
 	})
 }
 
 func Test_unmarshalJSON(t *testing.T) {
-	originalMap := map[string]interface{}{
+	originalMap := map[string]any{
 		"stringSlice": []string{"a", "b", "c"},
 		"intValue":    7,
 		"boolValue":   false,
@@ -67,7 +67,7 @@ func Test_unmarshalJSON(t *testing.T) {
 
 	t.Run("Successful JSON unmarshalling", func(t *testing.T) {
 		v := new(testJSON)
-		cf := make(map[string]interface{})
+		cf := make(map[string]any)
 		err := UnmarshalWithCustomFields(data, v, cf)
 		require.NoError(t, err)
 
@@ -75,7 +75,7 @@ func Test_unmarshalJSON(t *testing.T) {
 			S: []string{"a", "b", "c"},
 			I: 7,
 		}
-		expectedEf := map[string]interface{}{
+		expectedEf := map[string]any{
 			"boolValue": false,
 		}
 		require.Equal(t, expectedV, *v)
@@ -83,7 +83,7 @@ func Test_unmarshalJSON(t *testing.T) {
 	})
 
 	t.Run("Failed JSON unmarshalling", func(t *testing.T) {
-		cf := make(map[string]interface{})
+		cf := make(map[string]any)
 
 		// invalid JSON
 		err := UnmarshalWithCustomFields([]byte("not JSON"), "", cf)
@@ -100,13 +100,13 @@ func Test_unmarshalJSON(t *testing.T) {
 }
 
 func Test_toMaps(t *testing.T) {
-	v := []interface{}{
+	v := []any{
 		struct {
 			S string
 			I int
 		}{"12", 5},
 
-		map[string]interface{}{
+		map[string]any{
 			"a": "b",
 		},
 	}
@@ -114,12 +114,12 @@ func Test_toMaps(t *testing.T) {
 	maps, err := ToMaps(v)
 	require.NoError(t, err)
 	require.Len(t, maps, 2)
-	require.Equal(t, []map[string]interface{}{
+	require.Equal(t, []map[string]any{
 		{"S": "12", "I": 5.},
 		{"a": "b"},
 	}, maps)
 
-	maps, err = ToMaps([]interface{}{make(chan int)})
+	maps, err = ToMaps([]any{make(chan int)})
 	require.Error(t, err)
 	require.Empty(t, maps)
 }

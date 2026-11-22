@@ -13,7 +13,7 @@ import (
 )
 
 // MarshalCanonical is using JCS RFC canonicalization.
-func MarshalCanonical(value interface{}) ([]byte, error) {
+func MarshalCanonical(value any) ([]byte, error) {
 	valueBytes, ok := value.([]byte)
 
 	if !ok {

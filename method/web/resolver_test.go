@@ -11,10 +11,10 @@ import (
 	_ "embed"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	urlapi "net/url"
+	"os"
 	"strings"
 	"testing"
 
@@ -169,7 +169,7 @@ func TestResolveDID(t *testing.T) {
 }
 
 func TestResolveDomain(t *testing.T) {
-	aliceDoc, err := ioutil.ReadFile("testdata/alice/did.json")
+	aliceDoc, err := os.ReadFile("testdata/alice/did.json")
 	require.NoError(t, err)
 
 	s := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -198,7 +198,7 @@ func TestResolveDomain(t *testing.T) {
 }
 
 func TestResolveWebFixtures(t *testing.T) {
-	aliceDoc, err := ioutil.ReadFile("testdata/alice/did.json")
+	aliceDoc, err := os.ReadFile("testdata/alice/did.json")
 	require.NoError(t, err)
 
 	s := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
